@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 import Login from './login.js';
-import App from './app.js';
+import SongDisplay from './songDisplay.js';
 
 export const REST_URL = "https://final-dot-cs493-291619.wl.r.appspot.com/";
 
@@ -25,7 +25,7 @@ function Index(props){
     return(
         <div>
             <Login onLogin={handleLoginInfo} jwt={jwt} uid={uid} name={name} email={email} pic={pic}/>
-            <App/>
+            <SongDisplay/>
         </div>
     );
 }
