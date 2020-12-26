@@ -7,9 +7,10 @@ class PlaylistDisplay extends React.Component{
     }
 
     render(){
+        const playlist = this.props.playlist;
         return(
             <div>
-                This is the playlist
+                {playlist.name} : {playlist.description}
             </div>
         );
     }

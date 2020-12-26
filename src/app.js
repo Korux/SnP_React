@@ -85,7 +85,7 @@ class App extends React.Component{
                 loginState={this.state.loginState}
                  />}
                  {this.state.activeContainer === "SongDisplay" && <SongDisplay/>}
-                 {this.state.activeContainer === "PlaylistDisplay" && <PlaylistDisplay/>}
+                 {this.state.activeContainer === "PlaylistDisplay" && <PlaylistDisplay playlist={this.state.currPlaylist}/>}
             </div>
         );
     }
