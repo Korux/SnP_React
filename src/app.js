@@ -3,6 +3,7 @@ import React from 'react';
 import Login from './login.js';
 import SideMenu from './sidemenu.js';
 import SongDisplay from './songDisplay.js';
+import PlaylistDisplay from './playlistDisplay.js';
 import UserInfo from './userinfo.js';
 
 class App extends React.Component{
@@ -15,7 +16,9 @@ class App extends React.Component{
             uid : "",
             name : "",
             email : "",
-            pic : ""
+            pic : "",
+            currPlaylist : null,
+            activeContainer : "SongDisplay"
         };
     }
     
@@ -37,7 +40,6 @@ class App extends React.Component{
         this.setState({loginState : "NewUser"});
     }
 
-
     handleLoginInfo(jwt,uid,name,email,pic){
         this.setState({
             jwt : jwt,
@@ -47,6 +49,14 @@ class App extends React.Component{
             pic : pic,
             loginState:"LoggedIn"
         });
+    }
+
+    handlePlaylistClick(playlist){
+        this.setState({currPlaylist : playlist, activeContainer : "PlaylistDisplay"});
+    }
+
+    handleDiscoverClick(){
+        this.setState({activeContainer : "SongDisplay"});
     }
 
     render(){
@@ -60,6 +70,9 @@ class App extends React.Component{
 
                 {this.state.loginState === "LoggedIn" && 
                 <SideMenu
+                jwt={this.state.jwt}
+                playlistClick={this.handlePlaylistClick.bind(this)}
+                discoverClick={this.handleDiscoverClick.bind(this)}
                 />}
 
                 {this.state.loginState !== "LoggedIn" && 
@@ -71,7 +84,8 @@ class App extends React.Component{
                 loginError={this.handleFailedLogin.bind(this)}
                 loginState={this.state.loginState}
                  />}
-                 <SongDisplay/>
+                 {this.state.activeContainer === "SongDisplay" && <SongDisplay/>}
+                 {this.state.activeContainer === "PlaylistDisplay" && <PlaylistDisplay/>}
             </div>
         );
     }

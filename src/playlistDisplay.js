@@ -15,3 +15,5 @@ class PlaylistDisplay extends React.Component{
     }
 
 }
+
+export default PlaylistDisplay;

@@ -66,8 +66,6 @@ class SongDisplay extends React.Component{
             headers: { 'Content-Type': 'application/json' },
         };
 
-        this.setState({hasMoreSongs : false});
-
         fetch(REST_URL + 'songs?page=' + page,reqOpts)
         .then(response => response.json())
         .then(data => {

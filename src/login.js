@@ -107,8 +107,8 @@ class Login extends React.Component {
                     this.setState({loading : false});
                 }else {
                     let jwtInfo = parseJwt(data.id_token);
-                    this.props.onLogin(data.id_token,jwtInfo.sub,jwtInfo.name,jwtInfo.email,jwtInfo.picture);
                     this.setState({loading : false});
+                    this.props.onLogin(data.id_token,jwtInfo.sub,jwtInfo.name,jwtInfo.email,jwtInfo.picture);
                 }
 
             })
