@@ -2,7 +2,6 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Modal from 'react-modal';
 import {REST_URL} from './index.js';
-import style from './songDisplay.module.css';
 import Loading from './loading.js';
 
 function SearchBar(props){
@@ -13,7 +12,6 @@ function SearchBar(props){
 
     return(
         <input
-            className = {style.searchbar}
             value={props.songSearch}
             placeholder={"search song"}
             onChange={(e) => searchSongChange(e.target.value)}

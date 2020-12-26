@@ -1,5 +1,4 @@
 import React from 'react';
-import style from './login.module.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import {REST_URL} from './index.js';
@@ -59,39 +58,33 @@ class Login extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            login : "Guest",
             email : "",
             pw : "",
             loading : false,
         }
 
-        this.handleGuestClick = this.handleGuestClick.bind(this);
         this.handleLoginClick = this.handleLoginClick.bind(this);
         this.handleRegisterClick = this.handleRegisterClick.bind(this);
     }
 
-    handleGuestClick(){
-        this.setState({login : "LogReg"});
-    }
-
     handleLoginClick(email, pw){
+        this.props.loginClick();
         this.setState({
-            login : "User",
             email : email,
-            pw : pw,
+            pw : pw
         });
     }
 
     handleRegisterClick(email, pw){
+        this.props.registerClick();
         this.setState({
-            login : "NewUser",
             email : email,
-            pw : pw,
+            pw : pw
         });
     }
 
-    componentDidUpdate(prevProps,prevState){
-        if(this.state.login === "User" && prevState.login !== "User"){
+    componentDidUpdate(prevProps){
+        if(this.props.loginState === "User" && prevProps.loginState !== "User"){
 
             const params = {
                 email : this.state.email,
@@ -110,8 +103,8 @@ class Login extends React.Component {
             .then(response => response.json())
             .then(data => {
                 if(!data.id_token) {
-                    alert("error");
-                    this.setState({login : "Guest", loading : false});
+                    this.props.loginError(data);
+                    this.setState({loading : false});
                 }else {
                     let jwtInfo = parseJwt(data.id_token);
                     this.props.onLogin(data.id_token,jwtInfo.sub,jwtInfo.name,jwtInfo.email,jwtInfo.picture);
@@ -121,7 +114,7 @@ class Login extends React.Component {
             })
             .catch(err => console.log(err));
 
-        }else if(this.state.login === "NewUser" && prevState.login !== "NewUser"){
+        }else if(this.props.loginState === "NewUser" && prevProps.loginState !== "NewUser"){
 
             const params = {
                 email : this.state.email,
@@ -140,10 +133,10 @@ class Login extends React.Component {
             .then(response => response.json())
             .then(data => {
                 if(!data._id) {
-                    alert("error");
-                    this.setState({login : "Guest", loading : false});
+                    this.props.loginError(data);
+                    this.setState({loading : false});
                 }else {
-                    this.setState({login : "User"});
+                    this.props.loginClick();
                 }
 
             })
@@ -153,9 +146,9 @@ class Login extends React.Component {
 
     guestRender(){
         return (
-            <div className={style.container}>
+            <div>
                 You are a loser
-                <button onClick={this.handleGuestClick}>dont be a loser</button>
+                <button onClick={this.props.guestClick}>dont be a loser</button>
             </div>
         );
     }
@@ -175,13 +168,13 @@ class Login extends React.Component {
 
         return(
         <div>
-            {this.state.loading ? <Loading/> : <div>{this.state.error ? <p>errr</p> : <p>you win {this.props.name} and {this.props.email} and <img src={this.props.pic} alt="PFP"></img></p>} </div>}
+            {this.state.loading ? <Loading/> : <p></p>}
         </div>
         );
     }
 
     render(){
-        const loginState = this.state.login;
+        const loginState = this.props.loginState;
         if(loginState === "Guest"){
             return(<div>{this.guestRender()}</div>);
         }else if (loginState === "LogReg"){
