@@ -3,6 +3,7 @@ import style from './login.module.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import {REST_URL} from './index.js';
+import Loading from './loading.js';
 
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
@@ -174,7 +175,7 @@ class Login extends React.Component {
 
         return(
         <div>
-            {this.state.loading ? <p>loading</p> : <div>{this.state.error ? <p>errr</p> : <p>you win {this.props.name} and {this.props.email} and <img src={this.props.pic} alt="PFP"></img></p>} </div>}
+            {this.state.loading ? <Loading/> : <div>{this.state.error ? <p>errr</p> : <p>you win {this.props.name} and {this.props.email} and <img src={this.props.pic} alt="PFP"></img></p>} </div>}
         </div>
         );
     }

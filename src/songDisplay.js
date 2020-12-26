@@ -2,6 +2,24 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import Modal from 'react-modal';
 import {REST_URL} from './index.js';
+import style from './songDisplay.module.css';
+import Loading from './loading.js';
+
+function SearchBar(props){
+
+    function searchSongChange(e){
+        props.onChange(e);
+    }
+
+    return(
+        <input
+            className = {style.searchbar}
+            value={props.songSearch}
+            placeholder={"search song"}
+            onChange={(e) => searchSongChange(e.target.value)}
+        />
+    );
+}
 
 function Song(props){
 
@@ -9,15 +27,6 @@ function Song(props){
         <div onClick={props.onClick}>{props.name} : {props.artist}</div>
     );
 
-}
-
-function SongLoading(props){
-
-    return(
-        <div className="loader" key={0}>
-            Loading ...
-        </div>
-    );
 }
 
 class SongDisplay extends React.Component{
@@ -29,10 +38,15 @@ class SongDisplay extends React.Component{
             songs : [],
             hasMoreSongs : true,
             songModalOpen : false,
-            songModalIndex : 0
+            songModalIndex : 0,
+            songSearch : ""
         };
 
         this.handleSongClick.bind(this);
+    }
+
+    handleSearchChange(e){
+        this.setState({songSearch : e});
     }
 
     handleSongClick(i){
@@ -103,6 +117,10 @@ class SongDisplay extends React.Component{
 
         return(
             <div>
+                <SearchBar
+                songSearch={this.state.songSearch}
+                onChange={this.handleSearchChange.bind(this)}
+                />
                 <Modal
                 isOpen={this.state.songModalOpen}
                 onAfterOpen={this.handleAfterOpenModal.bind(this)}
@@ -115,7 +133,7 @@ class SongDisplay extends React.Component{
                 pageStart={0}
                 loadMore={this.handleLoadMore.bind(this)}
                 hasMore={this.state.hasMoreSongs}
-                loader={<SongLoading/>}
+                loader={<Loading/>}
                 >
                     {items} 
                 </InfiniteScroll>
