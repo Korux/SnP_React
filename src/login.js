@@ -29,7 +29,7 @@ function InputForm(props){
     return (
       <div>
         <Form onSubmit={handleSubmit}>
-          <Form.Group size="lg" controlId="email">
+          <Form.Group size="lg" controlId={"email-" + props.type}>
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
@@ -37,7 +37,7 @@ function InputForm(props){
               onChange={(e) => setEmail(e.target.value)}
             />
           </Form.Group>
-          <Form.Group size="lg" controlId="password">
+          <Form.Group size="lg" controlId={"password-" + props.type}>
             <Form.Label>Password</Form.Label>
             <Form.Control
               type="password"
@@ -157,9 +157,9 @@ class Login extends React.Component {
         return(
             <div>
                 <h2>Login Here</h2>
-                <InputForm onSubmit={this.handleLoginClick} buttonValue="Login"/>
+                <InputForm onSubmit={this.handleLoginClick} buttonValue="Login" type="login"/>
                 <h2>Signup Here</h2>
-                <InputForm onSubmit={this.handleRegisterClick} buttonValue="Register"/>
+                <InputForm onSubmit={this.handleRegisterClick} buttonValue="Register" type="register"/>
             </div>
         );
     }
