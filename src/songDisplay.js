@@ -1,10 +1,9 @@
 import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
-import Modal from 'react-modal';
 import {REST_URL} from './index.js';
 import Loading from './loading.js';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+
+import {Modal,Form,Button} from 'react-bootstrap';
 
 function SearchBar(props){
 
@@ -107,7 +106,7 @@ class SongDisplay extends React.Component{
 
     constructor(props){
         super(props);
-        Modal.setAppElement('#root');
+        //Modal.setAppElement('#root');
         this.state = {
             songs : [],
             hasMoreSongs : true,
@@ -206,19 +205,20 @@ class SongDisplay extends React.Component{
                 onChange={this.handleSearchChange.bind(this)}
                 />
                 <Modal
-                isOpen={this.state.songModalOpen}
-                onAfterOpen={this.handleAfterOpenModal.bind(this)}
-                onRequestClose={this.handleCloseModal.bind(this)}
-                contentLabel="Song"
+                show={this.state.songModalOpen}
+                onHide={this.handleCloseModal.bind(this)}
                 >
-                    {modalContent}
+                    <Modal.Header>
+                    <Modal.Title>Modal heading</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{modalContent}</Modal.Body>
+                    <Modal.Footer>
+                    </Modal.Footer>
                 </Modal>
 
                 <Modal
-                isOpen={this.state.addsongModalOpen}
-                onAfterOpen={this.handleAfterOpenModal.bind(this)}
-                onRequestClose={this.handleCloseModal.bind(this)}
-                contentLabel="Song"
+                show={this.state.addsongModalOpen}
+                onHide={this.handleCloseModal.bind(this)}
                 >
                     <AddSongForm onSubmit={this.handleAddSongSuccess.bind(this)}/>
                 </Modal>
