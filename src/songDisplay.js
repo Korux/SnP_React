@@ -3,7 +3,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import {REST_URL} from './index.js';
 import Loading from './loading.js';
 
-import {Modal,Form,Button} from 'react-bootstrap';
+import {Modal,Form,Button,ListGroup} from 'react-bootstrap';
 
 function SearchBar(props){
 
@@ -30,26 +30,96 @@ function Song(props){
 
 function AddSongForm(props){
     const [name,setName] = React.useState("");
+    const [artist,setArtist] = React.useState("");
     const [minutes,setMinutes] = React.useState(0);
     const [seconds,setSeconds] = React.useState(0);
     const [bpm,setBPM] = React.useState(0);
     const [vocals,setVocals] = React.useState([]);
+    const [genres,setGenres] = React.useState([]);
 
+    const [thisGenre,setThisGenre] = React.useState("");
     const [thisVocal,setThisVocal] = React.useState("");
 
     function validateForm(){
-        return name.length > 0 && minutes > -1 && seconds > 0;
+        return name.length > 0 && 
+        minutes >= 0 && 
+        seconds > 0 &&
+        artist.length > 0 &&
+        bpm > 0;
     }
 
     function handleSubmit(event){
         event.preventDefault();
-        props.onSubmit(name,minutes,seconds,bpm,vocals);
+        props.onSubmit(name,artist,minutes,seconds,bpm,vocals,genres);
     }
 
     function addVocal(){
         var newVocals = vocals.slice();
         newVocals.push(thisVocal);
         setVocals(newVocals);
+        setThisVocal("");
+    }
+
+    function removeVocal(i){
+        var newVocals = vocals.slice();
+        newVocals.splice(i,1);
+        setVocals(newVocals);
+
+    }
+
+    function addGenre(){
+        var newGenres = genres.slice();
+        newGenres.push(thisGenre);
+        setGenres(newGenres);
+        setThisGenre("");
+    }
+
+    function removeGenre(i){
+        var newGenres = genres.slice();
+        newGenres.splice(i,1);
+        setGenres(newGenres);
+    }
+
+    function displayVocals(){
+        const vocalList = vocals.map((vocal,i) => {
+            return(
+                <li key={i}>{vocal}<span className="close" onClick={() => removeVocal(i)}>x</span></li>
+            );
+        });
+        return(
+            <div>
+                {vocalList}
+            </div>
+        );
+    }
+
+    function displayGenres(){
+        const genreList = genres.map((genre,i) => {
+            return(
+                <li key={i}>{genre}<span className="close" onClick={() => removeGenre(i)}>x</span></li>
+            );
+        });
+        return(
+            <div>
+                {genreList}
+            </div>
+        );
+    }
+
+    function setMinutesIntOnly(i){
+        var test = i.replace(/[^\d]/,'');
+        if(test === '') test = 0;
+        if(!Number.isNaN(parseInt(test))){
+            setMinutes(parseInt(test));
+        }
+    }
+
+    function setSecondsIntOnly(i){
+        var test = i.replace(/[^\d]/,'');
+        if(test === '') test = 0;
+        if(!Number.isNaN(parseInt(test))){
+            setSeconds(parseInt(test));
+        }
     }
 
     return (
@@ -60,33 +130,89 @@ function AddSongForm(props){
                 <Form.Control
                 type="text"
                 value={name}
+                autoComplete="off"
                 onChange={(e) => setName(e.target.value)}
+                />
+            </Form.Group>
+            <Form.Group size="lg" controlId="artist">
+                <Form.Label>Song Artist</Form.Label>
+                <Form.Control
+                type="text"
+                value={artist}
+                autoComplete="off"
+                onChange={(e) => setArtist(e.target.value)}
                 />
             </Form.Group>
             <Form.Group size="lg" controlId="length">
                 <Form.Label>Song Length</Form.Label>
                 <Form.Control
-                type="number"
+                type="text"
                 value={minutes}
-                onChange={(e) => setMinutes(e.target.value)}
+                autoComplete="off"
+                onChange={(e) => setMinutesIntOnly(e.target.value)}
                 />
                 :
                 <Form.Control
                 type="number"
                 value={seconds}
-                onChange={(e) => setSeconds(e.target.value)}
+                autoComplete="off"
+                onChange={(e) => setSecondsIntOnly(e.target.value)}
+                />
+            </Form.Group>
+            <Form.Group size="lg" controlId="bpm">
+                <Form.Label>Song BPM</Form.Label>
+                <Form.Control
+                type="number"
+                value={bpm}
+                autoComplete="off"
+                onChange={(e) => setBPM(e.target.value)}
                 />
             </Form.Group>
             <Form.Group size="lg" controlId="vocals">
                 <Form.Label>Vocals</Form.Label>
-                <Form.Control
-                type="text"
-                value={thisVocal}
-                onChange={(e) => setThisVocal(e.target.value)}
-                />
-                <Button type="button" onClick={addVocal} disabled={thisVocal.length === 0}>
-                    Add Vocal
-                </Button>
+                <Form.Row>
+                    <Form.Group as={Form.Col}>
+                        <Form.Control
+                        type="text"
+                        value={thisVocal}
+                        autoComplete="off"
+                        onChange={(e) => setThisVocal(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Form.Col}>
+                        <Button type="button" onClick={addVocal} disabled={thisVocal.length === 0}>
+                            Add Vocal
+                        </Button>
+                    </Form.Group>
+                </Form.Row>
+
+                <ul>
+                    {displayVocals()}
+                </ul>
+                
+            </Form.Group>
+            <Form.Group size="lg" controlId="genres">
+                <Form.Label>Genres</Form.Label>
+                <Form.Row>
+                    <Form.Group as={Form.Col}>
+                        <Form.Control
+                        type="text"
+                        value={thisGenre}
+                        autoComplete="off"
+                        onChange={(e) => setThisGenre(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Form.Col}>
+                        <Button type="button" onClick={addGenre} disabled={thisGenre.length === 0}>
+                            Add Genre
+                        </Button>
+                    </Form.Group>
+                </Form.Row>
+                
+                <ul>
+                    {displayGenres()}
+                </ul>
+                
             </Form.Group>
             <Button block size="lg" type="submit" disabled={!validateForm()}>
                 Create
@@ -140,7 +266,7 @@ class SongDisplay extends React.Component{
         this.setState({addsongModalOpen : true});
     }
 
-    handleAddSongSuccess(name,minutes,seconds,bpm,vocals){
+    handleAddSongSuccess(name,artist,minutes,seconds,bpm,vocals,genres){
         this.handleCloseModal();
     }
 
@@ -184,8 +310,6 @@ class SongDisplay extends React.Component{
             );
         });
 
-        items.push(<AddSong key="r11" onClick={this.handleAddSongClick.bind(this)}/>);
-
         var modalContent = <div>No Song to Display</div>;
         if(!(this.state.songs.length < this.state.songModalIndex + 1)){
             let thisSong = this.state.songs[this.state.songModalIndex];
@@ -207,8 +331,9 @@ class SongDisplay extends React.Component{
                 <Modal
                 show={this.state.songModalOpen}
                 onHide={this.handleCloseModal.bind(this)}
+                centered={true}
                 >
-                    <Modal.Header>
+                    <Modal.Header closeButton>
                     <Modal.Title>Modal heading</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>{modalContent}</Modal.Body>
@@ -219,8 +344,17 @@ class SongDisplay extends React.Component{
                 <Modal
                 show={this.state.addsongModalOpen}
                 onHide={this.handleCloseModal.bind(this)}
+                backdrop="static"
+                keyboard={false}
+                centered={true}
                 >
-                    <AddSongForm onSubmit={this.handleAddSongSuccess.bind(this)}/>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Modal heading</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body><AddSongForm onSubmit={this.handleAddSongSuccess.bind(this)}/></Modal.Body>
+                    <Modal.Footer>
+                    </Modal.Footer>
+                    
                 </Modal>
 
                 <InfiniteScroll
@@ -231,7 +365,7 @@ class SongDisplay extends React.Component{
                 >
                     {items} 
                 </InfiniteScroll>
-            
+                <AddSong onClick={this.handleAddSongClick.bind(this)}/>
             </div>
         );
     }
