@@ -4,7 +4,7 @@ import {REST_URL} from './index.js';
 import Loading from './loading.js';
 import LoadingOverlay from 'react-loading-overlay';
 
-import {Modal,Form,Button,ListGroup} from 'react-bootstrap';
+import {Modal,Form,Button,Toast} from 'react-bootstrap';
 
 function SearchBar(props){
 
@@ -45,8 +45,7 @@ function AddSongForm(props){
 
     function validateForm(){
         return name.length > 0 && 
-        minutes >= 0 && 
-        seconds > 0 &&
+        (minutes*60) + seconds > 0 && 
         artist.length > 0 &&
         bpm > 0;
     }
@@ -248,7 +247,8 @@ class SongDisplay extends React.Component{
             songModalOpen : false,
             songModalIndex : 0,
             songSearch : "",
-            addsongModalOpen : false
+            addsongModalOpen : false,
+            addsongStatus : "None"
         };
 
         this.handleSongClick.bind(this);
@@ -266,17 +266,43 @@ class SongDisplay extends React.Component{
         this.setState({songModalOpen : false, addsongModalOpen : false});
     }
 
-    handleAfterOpenModal(){
-        // Logic after modal is displayed
-    }
-
-
     handleAddSongClick(){
         this.setState({addsongModalOpen : true});
     }
 
     handleAddSongSuccess(name,artist,minutes,seconds,bpm,vocals,genres){
-        //this.handleCloseModal();
+        const params = {
+            name : name,
+            artist : artist,
+            length : seconds + (minutes * 60),
+            bpm : parseInt(bpm),
+            vocals : vocals,
+            genres : genres
+        };
+
+        const reqOpts = {
+            method : 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization' : 'Bearer ' + this.props.jwt 
+            },
+            body: JSON.stringify(params),
+        };
+
+        fetch(REST_URL + "songs", reqOpts)
+        .then(response => response.json())
+        .then(data => {
+            if(!data.id) {
+                this.setState({addsongStatus : "Error"});
+            }else {
+                this.setState({addsongStatus : "Success"});
+                var newSongs = this.state.songs.slice();
+                newSongs.push(data);
+                this.setState({songs : newSongs});
+            }
+            this.handleCloseModal();
+        })
+        .catch(err => console.log(err));
     }
 
     handleLoadMore(page){
@@ -333,6 +359,24 @@ class SongDisplay extends React.Component{
 
         return(
             <div>
+
+
+                <Toast className="successToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "Success"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Successfully added song.</Toast.Body>
+                </Toast>
+
+                <Toast className="errorToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "Error"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Error with song creation. Please try again later.</Toast.Body>
+                </Toast>
+
                 <SearchBar
                 songSearch={this.state.songSearch}
                 onChange={this.handleSearchChange.bind(this)}

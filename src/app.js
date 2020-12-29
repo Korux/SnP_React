@@ -5,9 +5,6 @@ import SideMenu from './sidemenu.js';
 import SongDisplay from './songDisplay.js';
 import PlaylistDisplay from './playlistDisplay.js';
 import UserInfo from './userinfo.js';
-
-import style from './app.module.css';
-
 import {Toast} from 'react-bootstrap';
 
 class App extends React.Component{
@@ -68,12 +65,12 @@ class App extends React.Component{
         return(
             <div>
 
-                <Toast className={style.errorToast} onClose={() => this.setState({showErrorToast : false})} show={this.state.showErrorToast} delay = {3000} autohide>
+                <Toast className="errorToast" onClose={() => this.setState({showErrorToast : false})} show={this.state.showErrorToast} delay = {3000} autohide>
                     <Toast.Header>
                         <strong className="mr-auto">Bootstrap</strong>
                         <small>just now</small>
                     </Toast.Header>
-                    <Toast.Body>See? Just like this.</Toast.Body>
+                    <Toast.Body>Error with login. Check email and password and try again.</Toast.Body>
                 </Toast>
 
                 {this.state.loginState === "LoggedIn" && 
