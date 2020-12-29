@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import {REST_URL} from './index.js';
 import Loading from './loading.js';
+import LoadingOverlay from 'react-loading-overlay';
 
 function parseJwt (token) {
     var base64Url = token.split('.')[1];
@@ -22,7 +23,8 @@ function InputForm(props){
       return email.length > 0 && password.length > 0;
     }
   
-    function handleSubmit(){
+    function handleSubmit(event){
+        event.preventDefault();
         props.onSubmit(email,password);
     }
 
@@ -156,20 +158,16 @@ class Login extends React.Component {
     logregRender(){
         return(
             <div>
-                <h2>Login Here</h2>
-                <InputForm onSubmit={this.handleLoginClick} buttonValue="Login" type="login"/>
-                <h2>Signup Here</h2>
-                <InputForm onSubmit={this.handleRegisterClick} buttonValue="Register" type="register"/>
+                <LoadingOverlay
+                active = {this.state.loading}
+                spinner
+                text='logging in...'>
+                    <h2>Login Here</h2>
+                    <InputForm onSubmit={this.handleLoginClick} buttonValue="Login" type="login"/>
+                    <h2>Signup Here</h2>
+                    <InputForm onSubmit={this.handleRegisterClick} buttonValue="Register" type="register"/>
+                </LoadingOverlay>
             </div>
-        );
-    }
-
-    userRender(){
-
-        return(
-        <div>
-            {this.state.loading ? <Loading/> : <p></p>}
-        </div>
         );
     }
 
@@ -177,10 +175,8 @@ class Login extends React.Component {
         const loginState = this.props.loginState;
         if(loginState === "Guest"){
             return(<div>{this.guestRender()}</div>);
-        }else if (loginState === "LogReg"){
+        }else if (loginState === "LogReg" || loginState === "User" || loginState === "NewUser"){
             return(<div>{this.logregRender()}</div>);
-        }else if (loginState === "User" || loginState === "NewUser"){
-            return(<div>{this.userRender()}</div>);
         }else{
             return(<div>Error with login</div>);
         }

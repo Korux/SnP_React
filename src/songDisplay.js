@@ -2,6 +2,7 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import {REST_URL} from './index.js';
 import Loading from './loading.js';
+import LoadingOverlay from 'react-loading-overlay';
 
 import {Modal,Form,Button,ListGroup} from 'react-bootstrap';
 
@@ -40,6 +41,8 @@ function AddSongForm(props){
     const [thisGenre,setThisGenre] = React.useState("");
     const [thisVocal,setThisVocal] = React.useState("");
 
+    const [isLoading,setLoading] = React.useState(false);
+
     function validateForm(){
         return name.length > 0 && 
         minutes >= 0 && 
@@ -49,6 +52,7 @@ function AddSongForm(props){
     }
 
     function handleSubmit(event){
+        setLoading(true);
         event.preventDefault();
         props.onSubmit(name,artist,minutes,seconds,bpm,vocals,genres);
     }
@@ -124,100 +128,106 @@ function AddSongForm(props){
 
     return (
         <div>
-            <Form onSubmit={handleSubmit}>
-            <Form.Group size="lg" controlId="name">
-                <Form.Label>Song Name</Form.Label>
-                <Form.Control
-                type="text"
-                value={name}
-                autoComplete="off"
-                onChange={(e) => setName(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group size="lg" controlId="artist">
-                <Form.Label>Song Artist</Form.Label>
-                <Form.Control
-                type="text"
-                value={artist}
-                autoComplete="off"
-                onChange={(e) => setArtist(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group size="lg" controlId="length">
-                <Form.Label>Song Length</Form.Label>
-                <Form.Control
-                type="text"
-                value={minutes}
-                autoComplete="off"
-                onChange={(e) => setMinutesIntOnly(e.target.value)}
-                />
-                :
-                <Form.Control
-                type="number"
-                value={seconds}
-                autoComplete="off"
-                onChange={(e) => setSecondsIntOnly(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group size="lg" controlId="bpm">
-                <Form.Label>Song BPM</Form.Label>
-                <Form.Control
-                type="number"
-                value={bpm}
-                autoComplete="off"
-                onChange={(e) => setBPM(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group size="lg" controlId="vocals">
-                <Form.Label>Vocals</Form.Label>
-                <Form.Row>
-                    <Form.Group as={Form.Col}>
-                        <Form.Control
-                        type="text"
-                        value={thisVocal}
-                        autoComplete="off"
-                        onChange={(e) => setThisVocal(e.target.value)}
-                        />
-                    </Form.Group>
-                    <Form.Group as={Form.Col}>
-                        <Button type="button" onClick={addVocal} disabled={thisVocal.length === 0}>
-                            Add Vocal
-                        </Button>
-                    </Form.Group>
-                </Form.Row>
+            <LoadingOverlay
+            active = {isLoading}
+            spinner
+            text='creating song...'
+            >
+                <Form onSubmit={handleSubmit}>
+                <Form.Group size="lg" controlId="name">
+                    <Form.Label>Song Name</Form.Label>
+                    <Form.Control
+                    type="text"
+                    value={name}
+                    autoComplete="off"
+                    onChange={(e) => setName(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group size="lg" controlId="artist">
+                    <Form.Label>Song Artist</Form.Label>
+                    <Form.Control
+                    type="text"
+                    value={artist}
+                    autoComplete="off"
+                    onChange={(e) => setArtist(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group size="lg" controlId="length">
+                    <Form.Label>Song Length</Form.Label>
+                    <Form.Control
+                    type="text"
+                    value={minutes}
+                    autoComplete="off"
+                    onChange={(e) => setMinutesIntOnly(e.target.value)}
+                    />
+                    :
+                    <Form.Control
+                    type="number"
+                    value={seconds}
+                    autoComplete="off"
+                    onChange={(e) => setSecondsIntOnly(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group size="lg" controlId="bpm">
+                    <Form.Label>Song BPM</Form.Label>
+                    <Form.Control
+                    type="number"
+                    value={bpm}
+                    autoComplete="off"
+                    onChange={(e) => setBPM(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group size="lg" controlId="vocals">
+                    <Form.Label>Vocals</Form.Label>
+                    <Form.Row>
+                        <Form.Group as={Form.Col}>
+                            <Form.Control
+                            type="text"
+                            value={thisVocal}
+                            autoComplete="off"
+                            onChange={(e) => setThisVocal(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Form.Group as={Form.Col}>
+                            <Button type="button" onClick={addVocal} disabled={thisVocal.length === 0}>
+                                Add Vocal
+                            </Button>
+                        </Form.Group>
+                    </Form.Row>
 
-                <ul>
-                    {displayVocals()}
-                </ul>
-                
-            </Form.Group>
-            <Form.Group size="lg" controlId="genres">
-                <Form.Label>Genres</Form.Label>
-                <Form.Row>
-                    <Form.Group as={Form.Col}>
-                        <Form.Control
-                        type="text"
-                        value={thisGenre}
-                        autoComplete="off"
-                        onChange={(e) => setThisGenre(e.target.value)}
-                        />
-                    </Form.Group>
-                    <Form.Group as={Form.Col}>
-                        <Button type="button" onClick={addGenre} disabled={thisGenre.length === 0}>
-                            Add Genre
-                        </Button>
-                    </Form.Group>
-                </Form.Row>
-                
-                <ul>
-                    {displayGenres()}
-                </ul>
-                
-            </Form.Group>
-            <Button block size="lg" type="submit" disabled={!validateForm()}>
-                Create
-            </Button>
-            </Form>
+                    <ul>
+                        {displayVocals()}
+                    </ul>
+                    
+                </Form.Group>
+                <Form.Group size="lg" controlId="genres">
+                    <Form.Label>Genres</Form.Label>
+                    <Form.Row>
+                        <Form.Group as={Form.Col}>
+                            <Form.Control
+                            type="text"
+                            value={thisGenre}
+                            autoComplete="off"
+                            onChange={(e) => setThisGenre(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Form.Group as={Form.Col}>
+                            <Button type="button" onClick={addGenre} disabled={thisGenre.length === 0}>
+                                Add Genre
+                            </Button>
+                        </Form.Group>
+                    </Form.Row>
+                    
+                    <ul>
+                        {displayGenres()}
+                    </ul>
+                    
+                </Form.Group>
+                <Button block size="lg" type="submit" disabled={!validateForm()}>
+                    Create
+                </Button>
+                </Form>
+            </LoadingOverlay>
         </div>
     );
 }
@@ -232,7 +242,6 @@ class SongDisplay extends React.Component{
 
     constructor(props){
         super(props);
-        //Modal.setAppElement('#root');
         this.state = {
             songs : [],
             hasMoreSongs : true,
@@ -267,7 +276,7 @@ class SongDisplay extends React.Component{
     }
 
     handleAddSongSuccess(name,artist,minutes,seconds,bpm,vocals,genres){
-        this.handleCloseModal();
+        //this.handleCloseModal();
     }
 
     handleLoadMore(page){
@@ -365,7 +374,7 @@ class SongDisplay extends React.Component{
                 >
                     {items} 
                 </InfiniteScroll>
-                <AddSong onClick={this.handleAddSongClick.bind(this)}/>
+                {this.props.jwt !== "" && <AddSong onClick={this.handleAddSongClick.bind(this)}/>}
             </div>
         );
     }

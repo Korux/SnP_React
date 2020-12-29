@@ -6,6 +6,10 @@ import SongDisplay from './songDisplay.js';
 import PlaylistDisplay from './playlistDisplay.js';
 import UserInfo from './userinfo.js';
 
+import style from './app.module.css';
+
+import {Toast} from 'react-bootstrap';
+
 class App extends React.Component{
 
     constructor(props){
@@ -18,14 +22,14 @@ class App extends React.Component{
             email : "",
             pic : "",
             currPlaylist : null,
-            activeContainer : "SongDisplay"
+            activeContainer : "SongDisplay",
+            showErrorToast : false
         };
     }
-    
+
     handleFailedLogin(err){
         console.log(err);
-        alert("a");
-        this.setState({loginState : "Guest"});
+        this.setState({loginState : "Guest", showErrorToast : true});
     }
 
     handleGuestClick(){
@@ -63,6 +67,15 @@ class App extends React.Component{
 
         return(
             <div>
+
+                <Toast className={style.errorToast} onClose={() => this.setState({showErrorToast : false})} show={this.state.showErrorToast} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>See? Just like this.</Toast.Body>
+                </Toast>
+
                 {this.state.loginState === "LoggedIn" && 
                 <UserInfo
                 {...this.state}
@@ -84,8 +97,15 @@ class App extends React.Component{
                 loginError={this.handleFailedLogin.bind(this)}
                 loginState={this.state.loginState}
                  />}
-                 {this.state.activeContainer === "SongDisplay" && <SongDisplay/>}
-                 {this.state.activeContainer === "PlaylistDisplay" && <PlaylistDisplay playlist={this.state.currPlaylist}/>}
+                 {this.state.activeContainer === "SongDisplay" && 
+                 <SongDisplay
+                 jwt={this.state.jwt}
+                 />}
+
+                 {this.state.activeContainer === "PlaylistDisplay" && 
+                 <PlaylistDisplay 
+                 playlist={this.state.currPlaylist}
+                 />}
             </div>
         );
     }
