@@ -297,7 +297,7 @@ class SongDisplay extends React.Component{
             }else {
                 this.setState({addsongStatus : "Success"});
                 var newSongs = this.state.songs.slice();
-                newSongs.push(data);
+                newSongs.splice(0,0,data);
                 this.setState({songs : newSongs});
             }
             this.handleCloseModal();
