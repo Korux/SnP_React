@@ -2,7 +2,6 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import {REST_URL} from './index.js';
-import Loading from './loading.js';
 import LoadingOverlay from 'react-loading-overlay';
 
 function parseJwt (token) {
