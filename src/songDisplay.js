@@ -32,68 +32,6 @@ function Song(props){
 
 }
 
-// function SongModalBody(props){
-
-//     const [editing,setEditing] = React.useState(false);
-
-//     const [currName,setName] = React.useState(props.song.name);
-//     const [currArtist,setArtist] = React.useState(props.song.artist);
-
-//     const songRef = React.useRef();
-//     const artistRef = React.useRef();
-
-//     function handleInputSubmit(){
-//         setEditing(false);
-//         props.onSubmit(currName,currArtist);
-//     }
-
-//     return(
-//         <div>
-//             <LoadingOverlay
-//             active = {props.isLoading}
-//             spinner
-//             text='saving changes...'
-//             >
-//                 <EditableText
-//                 text={currName}
-//                 placeholder="song name"
-//                 childRef={songRef}
-//                 editing={editing}
-//                 >
-//                     <input
-//                     type="text"
-//                     name="song name"
-//                     placeholder="edit song name"
-//                     value={currName}
-//                     ref={songRef}
-//                     onChange={e => setName(e.target.value)}
-//                     />
-//                 </EditableText>
-//                 <br/>
-//                 <EditableText
-//                 text={currArtist}
-//                 placeholder="song artist"
-//                 childRef={artistRef}
-//                 editing={editing}
-//                 >
-//                     <input
-//                     type="text"
-//                     name="song artist"
-//                     placeholder="edit song artist"
-//                     value={currArtist}
-//                     ref={artistRef}
-//                     onChange={e => setArtist(e.target.value)}
-//                     />
-//                 </EditableText>
-//                 <br/>
-//                 {props.song.vocals}
-//                 {!editing && <Button onClick={() => {setEditing(true)}} disabled={props.jwt===""}>Edit</Button>}
-//                 {editing && <Button onClick={handleInputSubmit}>Save</Button>}
-//             </LoadingOverlay>
-//         </div>
-//     );
-// }
-
 function AddSongButton(props){
     return(
         <div onClick={props.onClick}>Add Song</div>
@@ -119,18 +57,19 @@ class SongDisplay extends React.Component{
         this.handleSongClick.bind(this);
     }
 
-    handleSongModalSubmit(name,artist){
+    handleSongModalSubmit(name,artist,minutes,seconds,bpm,vocals,genres){
         this.setState({modalLoading : true});
         let thisSong = this.state.songs[this.state.songModalIndex];
         let newSongs = this.state.songs.slice();
 
         thisSong.name = name;
         thisSong.artist = artist;
-        
-        newSongs.splice(this.state.songModalIndex,1,thisSong);
+        thisSong.length = seconds + (60*minutes);
+        thisSong.bpm = bpm;
+        thisSong.vocals = vocals;
+        thisSong.genres = genres;
 
-        console.log(newSongs);
-        console.log(thisSong);
+        newSongs.splice(this.state.songModalIndex,1,thisSong);
 
         const params = {
             name : thisSong.name,
@@ -154,7 +93,7 @@ class SongDisplay extends React.Component{
         .then(response => response.json())
         .then(data => {
             if(!data.id) {
-                this.setState({editsongStatus : "Error"});
+                this.setState({editsongStatus : "Error", modalLoading : false});
             }else {
                 this.setState({editsongStatus : "Success",songs : newSongs, modalLoading : false});
             }
@@ -184,7 +123,7 @@ class SongDisplay extends React.Component{
             name : name,
             artist : artist,
             length : seconds + (minutes * 60),
-            bpm : parseInt(bpm),
+            bpm : bpm,
             vocals : vocals,
             genres : genres
         };
@@ -202,9 +141,9 @@ class SongDisplay extends React.Component{
         .then(response => response.json())
         .then(data => {
             if(!data.id) {
-                this.setState({addsongStatus : "Error"});
+                this.setState({addsongStatus : "Error",modalLoading : false});
             }else {
-                this.setState({addsongStatus : "Success"});
+                this.setState({addsongStatus : "Success",modalLoading : false});
                 var newSongs = this.state.songs.slice();
                 newSongs.splice(0,0,data);
                 this.setState({songs : newSongs});
@@ -257,8 +196,7 @@ class SongDisplay extends React.Component{
         var modalContent = <div>No Song to Display</div>;
         if(!(this.state.songs.length < this.state.songModalIndex + 1)){
             let thisSong = this.state.songs[this.state.songModalIndex];
-            //modalContent = <SongModalBody isLoading={this.state.modalLoading} song={thisSong} onSubmit={this.handleSongModalSubmit.bind(this)} jwt={this.props.jwt}/>;
-            modalContent = <div>Temp</div>;
+            modalContent = <SongModalBody type="song" isLoading={this.state.modalLoading} song={thisSong} onSubmit={this.handleSongModalSubmit.bind(this)} jwt={this.props.jwt}/>;
         }
 
         return(

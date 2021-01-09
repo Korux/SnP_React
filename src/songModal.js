@@ -9,13 +9,13 @@ class SongModalBody extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            name : "",
-            artist : "",
-            minutes : 0,
-            seconds : 0,
-            bpm : 0,
-            vocals : [],
-            genres : [],
+            name : (this.props.song === undefined ? "" : this.props.song.name),
+            artist : (this.props.song === undefined ? "" : this.props.song.artist),
+            minutes : (this.props.song === undefined ? 0 : Math.floor(this.props.song.length/60)),
+            seconds : (this.props.song === undefined ? 0 : this.props.song.length%60),
+            bpm : (this.props.song === undefined ? 0 : this.props.song.bpm),
+            vocals : (this.props.song === undefined ? [] : this.props.song.vocals),
+            genres : (this.props.song === undefined ? [] : this.props.song.genres),
             thisGenre : "",
             thisVocal : "",
             editing : (this.props.type === "newsong" ? true : false)
@@ -38,6 +38,7 @@ class SongModalBody extends React.Component{
     }
 
     handleSubmit(event){
+        if(this.props.type === "song") this.setState({editing : false});
         event.preventDefault();
         this.props.onSubmit(
             this.state.name,
@@ -77,7 +78,7 @@ class SongModalBody extends React.Component{
     displayVocals(){
         const vocalList = this.state.vocals.map((vocal,i) => {
             return(
-                <li key={i}>{vocal}<span className="close" onClick={() => this.removeVocal(i)}>x</span></li>
+                <li key={i}>{vocal}{this.state.editing &&<span className="close" onClick={() => this.removeVocal(i)}>x</span>}</li>
             );
         });
         return(
@@ -90,7 +91,7 @@ class SongModalBody extends React.Component{
     displayGenres(){
         const genreList = this.state.genres.map((genre,i) => {
             return(
-                <li key={i}>{genre}<span className="close" onClick={() => this.removeGenre(i)}>x</span></li>
+                <li key={i}>{genre}{this.state.editing && <span className="close" onClick={() => this.removeGenre(i)}>x</span>}</li>
             );
         });
         return(
@@ -214,33 +215,29 @@ class SongModalBody extends React.Component{
                             type="number"
                             value={this.state.bpm}
                             autoComplete="off"
-                            onChange={(e) => this.setState({bpm : e.target.value})}
+                            onChange={(e) => this.setState({bpm : parseInt(e.target.value)})}
                             />
                         </EditableText>
                     </Form.Group>
                     <Form.Group size="lg" controlId="vocals">
                         <Form.Label>Vocals</Form.Label>
                         <Form.Row>
-                            <EditableText
-                            text={this.state.thisVocal}
-                            placeholder="song vocal"
-                            childRef={this.vocalRef}
-                            editing={this.state.editing}
-                            >
-                                <Form.Group as={Form.Col}>
-                                    <Form.Control
-                                    type="text"
-                                    value={this.state.thisVocal}
-                                    autoComplete="off"
-                                    onChange={(e) => this.setState({thisVocal : e.target.value})}
-                                    />
-                                </Form.Group>
-                            </EditableText>
+                            {this.state.editing &&
+                            <Form.Group as={Form.Col}>
+                                <Form.Control
+                                type="text"
+                                value={this.state.thisVocal}
+                                autoComplete="off"
+                                onChange={(e) => this.setState({thisVocal : e.target.value})}
+                                />
+                            </Form.Group>}
+                        
+                            {this.state.editing &&
                             <Form.Group as={Form.Col}>
                                 <Button type="button" onClick={this.addVocal.bind(this)} disabled={this.state.thisVocal.length === 0}>
                                     Add Vocal
                                 </Button>
-                            </Form.Group>
+                            </Form.Group>}
                         </Form.Row>
     
                         <ul>
@@ -251,12 +248,7 @@ class SongModalBody extends React.Component{
                     <Form.Group size="lg" controlId="genres">
                         <Form.Label>Genres</Form.Label>
                         <Form.Row>
-                            <EditableText
-                            text={this.state.thisGenre}
-                            placeholder="song genre"
-                            childRef={this.genreRef}
-                            editing={this.state.editing}
-                            >
+                            {this.state.editing &&
                             <Form.Group as={Form.Col}>
                                 <Form.Control
                                 type="text"
@@ -264,13 +256,14 @@ class SongModalBody extends React.Component{
                                 autoComplete="off"
                                 onChange={(e) => this.setState({thisGenre : e.target.value})}
                                 />
-                            </Form.Group>
-                            </EditableText>
+                            </Form.Group>}
+                            
+                            {this.state.editing &&
                             <Form.Group as={Form.Col}>
                                 <Button type="button" onClick={this.addGenre.bind(this)} disabled={this.state.thisGenre.length === 0}>
                                     Add Genre
                                 </Button>
-                            </Form.Group>
+                            </Form.Group>}
                         </Form.Row>
                         
                         <ul>
@@ -278,9 +271,12 @@ class SongModalBody extends React.Component{
                         </ul>
                         
                     </Form.Group>
-                    <Button block size="lg" type="submit" disabled={!this.validateForm()}>
+                    {this.props.type === "newsong" && <Button block size="lg" type="submit" disabled={!this.validateForm()}>
                         Create
-                    </Button>
+                    </Button>}
+                    {!this.state.editing && this.props.type === "song" && <Button onClick={() => {this.setState({editing : true})}} disabled={this.props.jwt===""}>Edit</Button>}
+                    {this.state.editing && this.props.type === "song" && <Button type="button" onClick={() => this.setState({editing : false})}>Cancel</Button>}
+                    {this.state.editing && this.props.type === "song" && <Button type="submit">Save</Button>}
                     </Form>
                 </LoadingOverlay>
             </div>
