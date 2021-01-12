@@ -3,7 +3,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import {REST_URL} from './index.js';
 import Loading from './loading.js';
 
-import SongModalBody from './songModal.js';
+import SongModalBody from './songmodal.js';
 
 import {Modal,Form,Button,Toast} from 'react-bootstrap';
 

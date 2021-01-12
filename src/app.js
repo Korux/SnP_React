@@ -2,8 +2,8 @@ import React from 'react';
 
 import Login from './login.js';
 import SideMenu from './sidemenu.js';
-import SongDisplay from './songDisplay.js';
-import PlaylistDisplay from './playlistDisplay.js';
+import SongDisplay from './songdisplay.js';
+import PlaylistDisplay from './playlistdisplay.js';
 import UserInfo from './userinfo.js';
 import {Toast} from 'react-bootstrap';
 
