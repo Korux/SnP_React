@@ -19,8 +19,10 @@ class App extends React.Component{
             email : "",
             pic : "",
             currPlaylist : null,
+            currPlaylistIndex : 0,
             activeContainer : "SongDisplay",
-            showErrorToast : false
+            showErrorToast : false,
+            pendingDeletePlaylist : false,
         };
     }
 
@@ -52,8 +54,16 @@ class App extends React.Component{
         });
     }
 
-    handlePlaylistClick(playlist){
-        this.setState({currPlaylist : playlist, activeContainer : "PlaylistDisplay"});
+    handlePlaylistClick(playlist,i){
+        this.setState({currPlaylist : playlist, currPlaylistIndex : i, activeContainer : "PlaylistDisplay"});
+    }
+
+    handlePlaylistDelete(){
+        this.setState({pendingDeletePlaylist : true});
+    }
+
+    handlePlayListDeleteSuccess(){
+        this.setState({pendingDeletePlaylist : false, activeContainer : "SongDisplay"});
     }
 
     handleDiscoverClick(){
@@ -83,6 +93,9 @@ class App extends React.Component{
                 jwt={this.state.jwt}
                 playlistClick={this.handlePlaylistClick.bind(this)}
                 discoverClick={this.handleDiscoverClick.bind(this)}
+                pendingDelete={this.state.pendingDeletePlaylist}
+                pendingDeleteIdx={this.state.currPlaylistIndex}
+                deleteSuccess={this.handlePlayListDeleteSuccess.bind(this)}
                 />}
 
                 {this.state.loginState !== "LoggedIn" && 
@@ -101,7 +114,9 @@ class App extends React.Component{
 
                  {this.state.activeContainer === "PlaylistDisplay" && 
                  <PlaylistDisplay 
+                 jwt={this.state.jwt}
                  playlist={this.state.currPlaylist}
+                 onDelete={this.handlePlaylistDelete.bind(this)}
                  />}
             </div>
         );

@@ -37,12 +37,22 @@ class SideMenu extends React.Component{
             playlists : [],
             hasMorePlaylists : true,
             addingPlaylist : false,
+            addplaylistStatus : "None"
         }
         this.handlePlaylistClick.bind(this);
     }
 
+    componentDidUpdate(prevProps){
+        if(prevProps.pendingDelete === false && this.props.pendingDelete === true){
+            let newPlaylists = this.state.playlists.slice();
+            newPlaylists.splice(this.props.pendingDeleteIdx,1);
+            this.setState({playlists : newPlaylists});
+            this.props.deleteSuccess();
+        }
+    }
+
     handlePlaylistClick(i){
-        this.props.playlistClick(this.state.playlists[i]);
+        this.props.playlistClick(this.state.playlists[i],i);
     }
 
     handleAddPlaylist(){
