@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
 import {EditableText} from './utils.js';
 
@@ -18,7 +18,8 @@ class SongModalBody extends React.Component{
             genres : (this.props.song === undefined ? [] : this.props.song.genres),
             thisGenre : "",
             thisVocal : "",
-            editing : (this.props.type === "newsong" ? true : false)
+            editing : (this.props.type === "newsong" ? true : false),
+            snapshot : "",
         };
 
         this.nameRef = React.createRef();
@@ -48,6 +49,22 @@ class SongModalBody extends React.Component{
             this.state.bpm,
             this.state.vocals,
             this.state.genres);
+        this.setState({thisGenre : "", thisVocal : ""});
+    }
+
+    handleEditCancel(){
+        this.setState({
+            name : this.state.snapshot.name,
+            artist : this.state.snapshot.artist,
+            minutes : this.state.snapshot.minutes,
+            seconds : this.state.snapshot.seconds,
+            bpm : this.state.snapshot.bpm,
+            vocals : this.state.snapshot.vocals,
+            genres : this.state.snapshot.genres,
+            thisGenre : "",
+            thisVocal : "",
+        });
+        this.setState({editing : false, snapshot : ""});
     }
 
     addVocal(){
@@ -274,8 +291,8 @@ class SongModalBody extends React.Component{
                     {this.props.type === "newsong" && <Button block size="lg" type="submit" disabled={!this.validateForm()}>
                         Create
                     </Button>}
-                    {!this.state.editing && this.props.type === "song" && <Button onClick={() => {this.setState({editing : true})}} disabled={this.props.jwt===""}>Edit</Button>}
-                    {this.state.editing && this.props.type === "song" && <Button type="button" onClick={() => this.setState({editing : false})}>Cancel</Button>}
+                    {!this.state.editing && this.props.type === "song" && <Button onClick={() => this.setState({editing : true, snapshot : this.state})} disabled={this.props.jwt===""}>Edit</Button>}
+                    {this.state.editing && this.props.type === "song" && <Button type="button" onClick={this.handleEditCancel.bind(this)}>Cancel</Button>}
                     {this.state.editing && this.props.type === "song" && <Button type="submit">Save</Button>}
                     </Form>
                 </LoadingOverlay>
