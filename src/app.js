@@ -84,6 +84,15 @@ class App extends React.Component{
         this.setState({activeContainer : "SongDisplay"});
     }
 
+    handlePlaylistEdit(name,desc){
+        let thisPlaylist = this.state.currPlaylist;
+        thisPlaylist.name = name;
+        thisPlaylist.description = desc;
+        let newPlaylists = this.state.playlists.slice();
+        newPlaylists.splice(this.state.currPlaylistIndex,1,thisPlaylist);
+        this.setState({currPlaylist : thisPlaylist, playlists : newPlaylists});
+    }
+
     handleLoadMorePlaylists(page){
         const reqOpts = {
             method : 'GET',
@@ -109,6 +118,11 @@ class App extends React.Component{
     }
 
     handleAddPlaylist(){
+        if(this.state.addplaylistStatus === "None"){
+            this.setState({addplaylistStatus : "Working"});
+        }else{
+            return;
+        }
         const params = {
             name : "My Playlist",
             description : "Playlist Description Here",
@@ -132,7 +146,7 @@ class App extends React.Component{
             }else {
                 var newPlaylists = this.state.playlists.slice();
                 newPlaylists.splice(0,0,data);
-                this.setState({playlists : newPlaylists});
+                this.setState({playlists : newPlaylists, addplaylistStatus : "None"});
                 this.handlePlaylistClick(0);
             }
         })
@@ -197,6 +211,7 @@ class App extends React.Component{
                  jwt={this.state.jwt}
                  playlist={this.state.currPlaylist}
                  onDelete={this.handlePlaylistDelete.bind(this)}
+                 onEdit={this.handlePlaylistEdit.bind(this)}
                  />}
             </div>
         );
