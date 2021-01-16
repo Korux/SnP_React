@@ -67,7 +67,7 @@ class PlaylistDisplay extends React.Component{
 
         fetch(REST_URL + "playlists/" + this.props.playlist.id, reqOpts)
         .then(response => {
-            if(response.status == 204){
+            if(response.status === 204){
                 this.props.onDelete();
             }else{
                 this.setState({deletePlaylistStatus : "Error"});
@@ -100,7 +100,7 @@ class PlaylistDisplay extends React.Component{
 
         fetch(REST_URL + "playlists/" + this.props.playlist.id, reqOpts)
         .then(response => {
-            if(response.status == 200){
+            if(response.status === 200){
                 this.props.onEdit(this.state.playlistName,this.state.playlistDesc);
                 this.setState({editing : false, editPlaylistStatus : "None"});
             }else{
