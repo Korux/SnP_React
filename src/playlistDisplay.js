@@ -1,6 +1,9 @@
 import React from 'react';
 import {Modal,Button,Toast} from 'react-bootstrap';
 import {REST_URL} from './index.js';
+import {EditableText} from './utils.js';
+
+import {Form} from 'react-bootstrap';
 
 function DeletePlaylistButton(props){
 
@@ -35,8 +38,12 @@ class PlaylistDisplay extends React.Component{
         this.state = {
             deletePlaylistStatus : "None",
             showDeleteConfirm : false,
-            isDeleting : false
+            isDeleting : false,
+            editing : true
         };
+
+        this.nameRef = React.createRef();
+        this.descRef = React.createRef();
     }
 
     handleDeleteButtonClick(){
@@ -66,7 +73,6 @@ class PlaylistDisplay extends React.Component{
     }
 
     render(){
-        const playlist = this.props.playlist;
         return(
 
             <div>
@@ -80,9 +86,34 @@ class PlaylistDisplay extends React.Component{
                 </Toast>
 
 
-                {playlist.name} : {playlist.description} 
+                <EditableText
+                text={this.props.playlist.name} 
+                placeholder="playlist name"
+                childRef={this.nameRef}
+                editing={this.state.editing}>
+                    <Form.Control
+                    type="text"
+                    value={this.props.playlist.name}
+                    autoComplete="off"
+                    onChange={(e) => console.log(e.target.value)}/>
+                </EditableText>
+
+                <br/>
+
+                <EditableText
+                text={this.props.playlist.description} 
+                placeholder="playlist description"
+                childRef={this.descRef}
+                editing={this.state.editing}>
+                    <Form.Control
+                    type="text"
+                    value={this.props.playlist.description}
+                    autoComplete="off"
+                    onChange={(e) => console.log(e.target.value)}/>
+                </EditableText>
+
                 <DeletePlaylistButton 
-                playlist={playlist} 
+                playlist={this.props.playlist} 
                 onDelete={this.handlePlaylistDelete.bind(this)}
                 onClick={this.handleDeleteButtonClick.bind(this)}
                 onCancel={() => {this.setState({showDeleteConfirm : false})}}

@@ -7,28 +7,42 @@ import PlaylistDisplay from './playlistdisplay.js';
 import UserInfo from './userinfo.js';
 import {Toast} from 'react-bootstrap';
 
+import {REST_URL} from './index.js';
+
 class App extends React.Component{
 
     constructor(props){
         super(props);
         this.state = {
+
+            // -- LOGIN --
+
             loginState : "Guest",
             jwt : "",
             uid : "",
             name : "",
             email : "",
             pic : "",
+            loginStatus : "None",
+
+            // -- PLAYLIST --
+
+            playlists : [],
+            hasMorePlaylists : true,
             currPlaylist : null,
             currPlaylistIndex : 0,
             activeContainer : "SongDisplay",
-            showErrorToast : false,
-            pendingDeletePlaylist : false,
+            addplaylistStatus : "None",
+            
         };
     }
 
+
+    // LOGIN RELATED HANDLERS
+
     handleFailedLogin(err){
         console.log(err);
-        this.setState({loginState : "Guest", showErrorToast : true});
+        this.setState({loginState : "Guest", loginStatus : "Error"});
     }
 
     handleGuestClick(){
@@ -54,33 +68,98 @@ class App extends React.Component{
         });
     }
 
-    handlePlaylistClick(playlist,i){
-        this.setState({currPlaylist : playlist, currPlaylistIndex : i, activeContainer : "PlaylistDisplay"});
+    //PLAYLIST RELATED HANDLERS
+
+    handlePlaylistClick(i){
+        this.setState({currPlaylist : this.state.playlists[i], currPlaylistIndex : i, activeContainer : "PlaylistDisplay"});
     }
 
     handlePlaylistDelete(){
-        this.setState({pendingDeletePlaylist : true});
-    }
-
-    handlePlayListDeleteSuccess(){
-        this.setState({pendingDeletePlaylist : false, activeContainer : "SongDisplay"});
+        let newPlaylists = this.state.playlists.slice();
+        newPlaylists.splice(this.state.currPlaylistIndex,1);
+        this.setState({playlists : newPlaylists, activeContainer : "SongDisplay"});
     }
 
     handleDiscoverClick(){
         this.setState({activeContainer : "SongDisplay"});
     }
 
+    handleLoadMorePlaylists(page){
+        const reqOpts = {
+            method : 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization' : 'Bearer ' + this.state.jwt 
+            },
+        };
+
+        fetch(REST_URL + 'playlists?page=' + page,reqOpts)
+        .then(response => response.json())
+        .then(data => {
+            var newPlaylists = this.state.playlists.slice();
+            data.playlists.forEach(playlist => {
+                newPlaylists.push(playlist);
+            });
+            this.setState({playlists : newPlaylists});
+            if(!data.next){
+                this.setState({hasMorePlaylists : false});
+            }
+        })
+        .catch(error => console.log(error));
+    }
+
+    handleAddPlaylist(){
+        const params = {
+            name : "My Playlist",
+            description : "Playlist Description Here",
+            public : true
+        };
+
+        const reqOpts = {
+            method : 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization' : 'Bearer ' + this.state.jwt 
+            },
+            body: JSON.stringify(params),
+        };
+
+        fetch(REST_URL + "playlists", reqOpts)
+        .then(response => response.json())
+        .then(data => {
+            if(!data.id) {
+                this.setState({addplaylistStatus : "Error"});
+            }else {
+                var newPlaylists = this.state.playlists.slice();
+                newPlaylists.splice(0,0,data);
+                this.setState({playlists : newPlaylists});
+                this.handlePlaylistClick(0);
+            }
+        })
+        .catch(err => console.log(err));
+
+    }
+
+
     render(){
 
         return(
             <div>
 
-                <Toast className="errorToast" onClose={() => this.setState({showErrorToast : false})} show={this.state.showErrorToast} delay = {3000} autohide>
+                <Toast className="errorToast" onClose={() => this.setState({loginStatus : "None"})} show={this.state.loginStatus === "Error"} delay = {3000} autohide>
                     <Toast.Header>
                         <strong className="mr-auto">Bootstrap</strong>
                         <small>just now</small>
                     </Toast.Header>
                     <Toast.Body>Error with login. Check email and password and try again.</Toast.Body>
+                </Toast>
+
+                <Toast className="errorToast" onClose={() => this.setState({addplaylistStatus : "None"})} show={this.state.addplaylistStatus === "Error"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Error with playlist creation. Please try again later.</Toast.Body>
                 </Toast>
 
                 {this.state.loginState === "LoggedIn" && 
@@ -92,10 +171,11 @@ class App extends React.Component{
                 <SideMenu
                 jwt={this.state.jwt}
                 playlistClick={this.handlePlaylistClick.bind(this)}
+                addplaylistClick={this.handleAddPlaylist.bind(this)}
                 discoverClick={this.handleDiscoverClick.bind(this)}
-                pendingDelete={this.state.pendingDeletePlaylist}
-                pendingDeleteIdx={this.state.currPlaylistIndex}
-                deleteSuccess={this.handlePlayListDeleteSuccess.bind(this)}
+                playlists={this.state.playlists}
+                playlistLoadMore={this.handleLoadMorePlaylists.bind(this)}
+                hasMorePlaylists={this.state.hasMorePlaylists}
                 />}
 
                 {this.state.loginState !== "LoggedIn" && 
