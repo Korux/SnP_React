@@ -15,6 +15,8 @@ class App extends React.Component{
         super(props);
         this.state = {
 
+            activeContainer : "SongDisplay",
+
             // -- LOGIN --
 
             loginState : "Guest",
@@ -31,8 +33,14 @@ class App extends React.Component{
             hasMorePlaylists : true,
             currPlaylist : null,
             currPlaylistIndex : 0,
-            activeContainer : "SongDisplay",
             addplaylistStatus : "None",
+
+            // -- SONGS --
+            songs : [],
+            hasMoreSongs : true,
+            currSong : null,
+            currSongIndex : 0,
+            songToPlaylistStatus : "None",
             
         };
     }
@@ -154,6 +162,45 @@ class App extends React.Component{
 
     }
 
+    // SONG RELATED HANDLERS
+
+    handleLoadMoreSongs(page){
+
+        const reqOpts = {
+            method : 'GET',
+            headers: { 'Content-Type': 'application/json' },
+        };
+
+        fetch(REST_URL + 'songs?page=' + page,reqOpts)
+        .then(response => response.json())
+        .then(data => {
+            var newSongs = this.state.songs.slice();
+            data.songs.forEach(song => {
+                newSongs.push(song);
+            });
+            this.setState({songs : newSongs});
+            if(!data.next){
+                this.setState({hasMoreSongs : false});
+            }
+        })
+        .catch(error => console.log(error));
+    }
+
+    handleSongEdit(newSong){
+        let newSongs = this.state.songs.slice();
+        newSongs.splice(this.state.currSongIndex,1,newSong);
+        this.setState({songs : newSongs});
+    }
+
+    handleSongClick(i){
+        this.setState({currSongIndex : i, currSong : this.state.songs[this.state.currSongIndex]});
+    }
+
+    handleNewSongSubmit(newSong){
+        let newSongs = this.state.songs.slice();
+        newSongs.splice(0,0,newSong);
+        this.setState({songs : newSongs});
+    }
 
     render(){
 
@@ -204,6 +251,14 @@ class App extends React.Component{
                  {this.state.activeContainer === "SongDisplay" && 
                  <SongDisplay
                  jwt={this.state.jwt}
+                 songs={this.state.songs}
+                 hasMoreSongs={this.state.hasMoreSongs}
+                 songsLoadMore={this.handleLoadMoreSongs.bind(this)}
+                 currSong={this.state.currSong}
+                 currSongIndex={this.state.currSongIndex}
+                 onEdit={this.handleSongEdit.bind(this)}
+                 onClick={this.handleSongClick.bind(this)}
+                 onSubmit={this.handleNewSongSubmit.bind(this)}
                  />}
 
                  {this.state.activeContainer === "PlaylistDisplay" && 

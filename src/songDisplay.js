@@ -41,10 +41,7 @@ class SongDisplay extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            songs : [],
-            hasMoreSongs : true,
             songModalOpen : false,
-            songModalIndex : 0,
             editsongStatus : "None",
             songSearch : "",
             addsongModalOpen : false,
@@ -57,8 +54,7 @@ class SongDisplay extends React.Component{
 
     handleSongModalSubmit(name,artist,minutes,seconds,bpm,vocals,genres){
         this.setState({modalLoading : true});
-        let thisSong = this.state.songs[this.state.songModalIndex];
-        let newSongs = this.state.songs.slice();
+        let thisSong = this.props.currSong;
 
         thisSong.name = name;
         thisSong.artist = artist;
@@ -66,8 +62,6 @@ class SongDisplay extends React.Component{
         thisSong.bpm = bpm;
         thisSong.vocals = vocals;
         thisSong.genres = genres;
-
-        newSongs.splice(this.state.songModalIndex,1,thisSong);
 
         const params = {
             name : thisSong.name,
@@ -93,7 +87,8 @@ class SongDisplay extends React.Component{
             if(!data.id) {
                 this.setState({editsongStatus : "Error", modalLoading : false});
             }else {
-                this.setState({editsongStatus : "Success",songs : newSongs, modalLoading : false});
+                this.props.onEdit(thisSong);
+                this.setState({editsongStatus : "Success", modalLoading : false});
             }
         })
         .catch(err => console.log(err));
@@ -104,7 +99,8 @@ class SongDisplay extends React.Component{
     }
 
     handleSongClick(i){
-        this.setState({songModalOpen : true, songModalIndex : i});
+        this.props.onClick(i);
+        this.setState({songModalOpen : true});
     }
 
     handleCloseModal(){
@@ -141,42 +137,18 @@ class SongDisplay extends React.Component{
             if(!data.id) {
                 this.setState({addsongStatus : "Error",modalLoading : false});
             }else {
+                this.props.onSubmit(data);
                 this.setState({addsongStatus : "Success",modalLoading : false});
-                var newSongs = this.state.songs.slice();
-                newSongs.splice(0,0,data);
-                this.setState({songs : newSongs});
             }
             this.handleCloseModal();
         })
         .catch(err => console.log(err));
     }
 
-    handleLoadMore(page){
-
-        const reqOpts = {
-            method : 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        };
-
-        fetch(REST_URL + 'songs?page=' + page,reqOpts)
-        .then(response => response.json())
-        .then(data => {
-            var newSongs = this.state.songs.slice();
-            data.songs.forEach(song => {
-                newSongs.push(song);
-            });
-            this.setState({songs : newSongs});
-            if(!data.next){
-                this.setState({hasMoreSongs : false});
-            }
-        })
-        .catch(error => console.log(error));
-    }
-
     render(){
 
         var items = [];
-        items = this.state.songs.map((song,i) => {
+        items = this.props.songs.map((song,i) => {
             return(
                 <Song 
                 key={i}
@@ -192,8 +164,8 @@ class SongDisplay extends React.Component{
         });
 
         var modalContent = <div>No Song to Display</div>;
-        if(!(this.state.songs.length < this.state.songModalIndex + 1)){
-            let thisSong = this.state.songs[this.state.songModalIndex];
+        if(!(this.props.songs.length < this.props.currSongIndex + 1)){
+            let thisSong = this.props.songs[this.props.currSongIndex];
             modalContent = <SongModalBody type="song" isLoading={this.state.modalLoading} song={thisSong} onSubmit={this.handleSongModalSubmit.bind(this)} jwt={this.props.jwt}/>;
         }
 
@@ -252,8 +224,8 @@ class SongDisplay extends React.Component{
 
                 <InfiniteScroll
                 pageStart={0}
-                loadMore={this.handleLoadMore.bind(this)}
-                hasMore={this.state.hasMoreSongs}
+                loadMore={this.props.songsLoadMore}
+                hasMore={this.props.hasMoreSongs}
                 loader={<Loading/>}
                 >
                     {items} 
