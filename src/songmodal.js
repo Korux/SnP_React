@@ -1,7 +1,9 @@
 import React from 'react';
 import {EditableText} from './utils.js';
 
-import {Form,Button} from 'react-bootstrap';
+import {Form,Button, DropdownButton, Dropdown, Toast} from 'react-bootstrap';
+
+import {REST_URL} from './index.js';
 
 class SongModalBody extends React.Component{
 
@@ -19,6 +21,7 @@ class SongModalBody extends React.Component{
             thisVocal : "",
             editing : (this.props.type === "newsong" ? true : false),
             snapshot : "",
+            addtoPlaylistStatus : "None",
         };
 
         this.nameRef = React.createRef();
@@ -133,9 +136,67 @@ class SongModalBody extends React.Component{
         }
     }
 
+    handleDDPlaylistClick(playlist,i){
+        playlist.songs.forEach(song => {
+            if(song.id.toString() === this.props.song.id){
+                this.setState({addtoPlaylistStatus : "ErrorDupe"});
+            }
+        });
+
+        const reqOpts = {
+            method : 'PUT',
+            headers: { 
+                'Authorization' : 'Bearer ' + this.props.jwt 
+            },
+        };
+
+        fetch(REST_URL + "playlists/" + playlist.id + "/songs/" + this.props.song.id, reqOpts)
+        .then(response => {
+            if(response.status !== 204){
+                if(this.state.addtoPlaylistStatus !== "ErrorDupe") this.setState({addtoPlaylistStatus : "Error"});
+            }else{
+                this.props.onAdd(i);
+            }
+        })
+        .catch(err => console.log(err));     
+    }
+
     render(){
+
+        let playlists = this.props.playlists.map((playlist,i) => {
+            return(
+            <Dropdown.Item
+            key={i}
+            onClick={() => this.handleDDPlaylistClick(playlist,i)}
+            >
+                {playlist.name}
+            </Dropdown.Item>
+            );
+        });
+
         return (
             <div>
+
+
+
+
+                <Toast className="errorToast" onClose={() => this.setState({addtoPlaylistStatus : "None"})} show={this.state.addtoPlaylistStatus === "ErrorDupe"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Song is already in this playlist.</Toast.Body>
+                </Toast>
+
+                <Toast className="errorToast" onClose={() => this.setState({addtoPlaylistStatus : "None"})} show={this.state.addtoPlaylistStatus === "Error"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Error adding song to playlist. Please try again later.</Toast.Body>
+                </Toast>
+
+
 
                 <Form onSubmit={this.handleSubmit.bind(this)}>
 
@@ -283,6 +344,15 @@ class SongModalBody extends React.Component{
                     </ul>
                     
                 </Form.Group>
+
+                {this.props.type === "song" && 
+                    <DropdownButton title="Add to Playlist" disabled={this.props.jwt===""}>
+                        {playlists}
+                    </DropdownButton>
+                }
+
+                        
+
                 {this.props.type === "newsong" && <Button block size="lg" type="submit" disabled={!this.validateForm() || this.props.isLoading}>
                     Create
                 </Button>}

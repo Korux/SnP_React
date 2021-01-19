@@ -145,6 +145,10 @@ class SongDisplay extends React.Component{
         .catch(err => console.log(err));
     }
 
+    handleAddToPlaylist(i){
+        this.props.onAdd(i);
+    }
+
     render(){
 
         var items = [];
@@ -166,7 +170,15 @@ class SongDisplay extends React.Component{
         var modalContent = <div>No Song to Display</div>;
         if(!(this.props.songs.length < this.props.currSongIndex + 1)){
             let thisSong = this.props.songs[this.props.currSongIndex];
-            modalContent = <SongModalBody type="song" isLoading={this.state.modalLoading} song={thisSong} onSubmit={this.handleSongModalSubmit.bind(this)} jwt={this.props.jwt}/>;
+            modalContent = 
+            <SongModalBody 
+            type="song" 
+            isLoading={this.state.modalLoading} 
+            song={thisSong} 
+            onSubmit={this.handleSongModalSubmit.bind(this)} 
+            jwt={this.props.jwt} 
+            playlists={this.props.playlists}
+            onAdd={this.handleAddToPlaylist.bind(this)}/>;
         }
 
         return(

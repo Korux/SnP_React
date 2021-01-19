@@ -117,6 +117,17 @@ class PlaylistDisplay extends React.Component{
     }
 
     render(){
+
+        let playlistSongs = this.props.playlist.songs.map((song,i) => {
+            return(
+                <div
+                key={i}
+                >
+                    {song.id}
+                </div>
+            );
+        });
+
         return(
 
             <div>
@@ -175,6 +186,7 @@ class PlaylistDisplay extends React.Component{
                 {!this.state.editing &&  <Button type="button" onClick={this.handleEditClick.bind(this)}>Edit</Button>}
                 {this.state.editing && <Button type="button" onClick={this.handleEditCancel.bind(this)} disabled={this.state.editPlaylistStatus === "Working"}>Cancel</Button>}
                 {this.state.editing && <Button type="button" onClick={this.handleEditSave.bind(this)} disabled={this.state.editPlaylistStatus === "Working"}>Save</Button>}
+                {playlistSongs}
             </div>
         );
     }

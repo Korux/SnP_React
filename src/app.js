@@ -48,8 +48,7 @@ class App extends React.Component{
 
     // LOGIN RELATED HANDLERS
 
-    handleFailedLogin(err){
-        console.log(err);
+    handleFailedLogin(){
         this.setState({loginState : "Guest", loginStatus : "Error"});
     }
 
@@ -202,6 +201,17 @@ class App extends React.Component{
         this.setState({songs : newSongs});
     }
 
+    // OTHER HANDLERS
+
+    handleAddSongToPlaylist(i){
+        let thisPlaylist = this.state.playlists[i];
+        thisPlaylist.songs.push({id:this.state.currSong.id,self:REST_URL + "songs/"+this.state.currSong.id});
+        thisPlaylist.numsongs = thisPlaylist.numsongs + 1;
+        let newPlaylists = this.state.playlists.slice();
+        newPlaylists.splice(i,1,thisPlaylist);
+        this.setState({playlists : newPlaylists});
+    }
+
     render(){
 
         return(
@@ -259,6 +269,8 @@ class App extends React.Component{
                  onEdit={this.handleSongEdit.bind(this)}
                  onClick={this.handleSongClick.bind(this)}
                  onSubmit={this.handleNewSongSubmit.bind(this)}
+                 onAdd={this.handleAddSongToPlaylist.bind(this)}
+                 playlists={this.state.playlists}
                  />}
 
                  {this.state.activeContainer === "PlaylistDisplay" && 
