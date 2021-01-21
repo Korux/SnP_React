@@ -226,7 +226,7 @@ class App extends React.Component{
     }
 
     handleSongClick(i){
-        this.setState({currSongIndex : i, currSong : this.state.songs[this.state.currSongIndex]});
+        this.setState({currSongIndex : i, currSong : this.state.songs[i]});
     }
 
     handleNewSongSubmit(newSong){

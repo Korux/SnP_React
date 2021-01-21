@@ -174,8 +174,6 @@ class SongModalBody extends React.Component{
             );
         });
 
-        console.log(playlists.length);
-
         return (
             <div>
 
