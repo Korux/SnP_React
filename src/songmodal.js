@@ -347,8 +347,8 @@ class SongModalBody extends React.Component{
                     
                 </Form.Group>
 
-                {this.props.type === "song" && 
-                    <DropdownButton title="Add to Playlist" disabled={this.props.jwt===""}>
+                {this.props.type === "song" &&
+                    <DropdownButton title="Add to Playlist" disabled={this.props.jwt==="" || this.state.editing}>
                         {playlists.length > 0 ? playlists : <Dropdown.ItemText>No Playlists</Dropdown.ItemText>}
                     </DropdownButton>
                 }
