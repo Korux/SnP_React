@@ -30,6 +30,15 @@ function DeletePlaylistButton(props){
     );
 }
 
+function PlaylistSong(props){
+
+    return(
+        <div>
+            {props.song.id} {props.song.name} : {props.song.artist}
+        </div>
+    );  
+}
+
 class PlaylistDisplay extends React.Component{
 
     constructor(props){
@@ -118,13 +127,9 @@ class PlaylistDisplay extends React.Component{
 
     render(){
 
-        let playlistSongs = this.props.playlist.songs.map((song,i) => {
+        let playlistSongs = this.props.songs.map((song,i) => {
             return(
-                <div
-                key={i}
-                >
-                    {song.id}
-                </div>
+                <PlaylistSong song={song} key={i}/>
             );
         });
 
@@ -147,7 +152,6 @@ class PlaylistDisplay extends React.Component{
                     </Toast.Header>
                     <Toast.Body>Error with editing playlist. Please try again later.</Toast.Body>
                 </Toast>
-
 
                 <EditableText
                 text={this.props.playlist.name} 

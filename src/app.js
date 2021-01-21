@@ -33,7 +33,9 @@ class App extends React.Component{
             hasMorePlaylists : true,
             currPlaylist : null,
             currPlaylistIndex : 0,
+            currPlaylistSongs : [],
             addplaylistStatus : "None",
+            loadplaylistStatus : "None",
 
             // -- SONGS --
             songs : [],
@@ -78,7 +80,39 @@ class App extends React.Component{
     //PLAYLIST RELATED HANDLERS
 
     handlePlaylistClick(i){
-        this.setState({currPlaylist : this.state.playlists[i], currPlaylistIndex : i, activeContainer : "PlaylistDisplay"});
+
+        let promises = [];
+
+        this.state.playlists[i].songs.forEach((song) => {
+            promises.push(this.handleLoadCurrPlaylist(song));
+        });
+
+        Promise.all(promises).then(res => {
+            this.setState({currPlaylist : this.state.playlists[i], currPlaylistIndex : i, currPlaylistSongs : res, activeContainer : "PlaylistDisplay"});
+        }).catch(err => {
+            console.log(err);
+            this.setState({loadplaylistStatus : "Error"});
+        });
+    }
+
+    handleLoadCurrPlaylist(song){
+
+        return new Promise((resolve,reject) => {
+            const reqOpts = {
+                method : 'GET',
+            };
+    
+            fetch(REST_URL + "songs/" + song.id, reqOpts)
+            .then(response => response.json())
+            .then(data => {
+                if(!data.id) {
+                    reject(null);
+                }else {
+                    resolve(data);
+                }
+            })
+            .catch(err => console.log(err));
+        });
     }
 
     handlePlaylistDelete(){
@@ -217,6 +251,14 @@ class App extends React.Component{
         return(
             <div>
 
+                <Toast className="errorToast" onClose={() => this.setState({loadplaylistStatus : "None"})} show={this.state.loadplaylistStatus === "Error"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Error with loading playlist. Please try again later.</Toast.Body>
+                </Toast>
+
                 <Toast className="errorToast" onClose={() => this.setState({loginStatus : "None"})} show={this.state.loginStatus === "Error"} delay = {3000} autohide>
                     <Toast.Header>
                         <strong className="mr-auto">Bootstrap</strong>
@@ -277,6 +319,7 @@ class App extends React.Component{
                  <PlaylistDisplay 
                  jwt={this.state.jwt}
                  playlist={this.state.currPlaylist}
+                 songs={this.state.currPlaylistSongs}
                  onDelete={this.handlePlaylistDelete.bind(this)}
                  onEdit={this.handlePlaylistEdit.bind(this)}
                  />}

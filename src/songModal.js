@@ -174,6 +174,8 @@ class SongModalBody extends React.Component{
             );
         });
 
+        console.log(playlists.length);
+
         return (
             <div>
 
@@ -347,7 +349,7 @@ class SongModalBody extends React.Component{
 
                 {this.props.type === "song" && 
                     <DropdownButton title="Add to Playlist" disabled={this.props.jwt===""}>
-                        {playlists}
+                        {playlists.length > 0 ? playlists : <Dropdown.ItemText>No Playlists</Dropdown.ItemText>}
                     </DropdownButton>
                 }
 
