@@ -33,6 +33,12 @@ class SongModalBody extends React.Component{
         this.genreRef = React.createRef();
     }
 
+    componentDidUpdate(prevProps){
+        if(prevProps.song !== this.props.song){
+            console.log("new");
+        }
+    }
+
     validateForm(){
         return this.state.name.length > 0 && 
         (this.state.minutes*60) + this.state.seconds > 0 && 
@@ -66,7 +72,7 @@ class SongModalBody extends React.Component{
             thisGenre : "",
             thisVocal : "",
         });
-        this.setState({editing : false, snapshot : ""});
+         this.setState({editing : false, snapshot : ""});
     }
 
     addVocal(){
@@ -163,16 +169,20 @@ class SongModalBody extends React.Component{
 
     render(){
 
-        let playlists = this.props.playlists.map((playlist,i) => {
-            return(
-            <Dropdown.Item
-            key={i}
-            onClick={() => this.handleDDPlaylistClick(playlist,i)}
-            >
-                {playlist.name}
-            </Dropdown.Item>
-            );
-        });
+        let playlists=[];
+
+        if(this.props.type === "song"){
+            playlists = this.props.playlists.map((playlist,i) => {
+                return(
+                <Dropdown.Item
+                key={i}
+                onClick={() => this.handleDDPlaylistClick(playlist,i)}
+                >
+                    {playlist.name}
+                </Dropdown.Item>
+                );
+            });        
+        }
 
         return (
             <div>
@@ -205,7 +215,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="name">
                     <Form.Label>Song Name</Form.Label>
                     <EditableText
-                    text={this.state.name}
+                    text={this.props.song.name}
                     placeholder="song name"
                     childRef={this.nameRef}
                     editing={this.state.editing}
@@ -225,7 +235,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="artist">
                     <Form.Label>Song Artist</Form.Label>
                     <EditableText
-                    text={this.state.artist}
+                    text={this.props.song.artist}
                     placeholder="song artist"
                     childRef={this.artistRef}
                     editing={this.state.editing}
@@ -246,7 +256,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="length">
                     <Form.Label>Song Length</Form.Label>
                     <EditableText
-                    text={this.state.minutes}
+                    text={this.props.song.minutes}
                     placeholder="song minutes"
                     childRef={this.minutesRef}
                     editing={this.state.editing}
@@ -260,7 +270,7 @@ class SongModalBody extends React.Component{
                     </EditableText>
                     :
                     <EditableText
-                    text={this.state.seconds}
+                    text={this.props.song.seconds}
                     placeholder="song secondss"
                     childRef={this.secondsRef}
                     editing={this.state.editing}
@@ -279,7 +289,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="bpm">
                     <Form.Label>Song BPM</Form.Label>
                     <EditableText
-                    text={this.state.bpm}
+                    text={this.props.song.bpm}
                     placeholder="song seconds"
                     childRef={this.bpmRef}
                     editing={this.state.editing}

@@ -85,7 +85,8 @@ class SongDisplay extends React.Component{
         .then(response => response.json())
         .then(data => {
             if(!data.id) {
-                this.setState({editsongStatus : "Error", modalLoading : false});
+                if(data.Error === "Song is already in the database") this.setState({editsongStatus : "ErrorDupe",modalLoading : false});
+                else this.setState({editsongStatus : "Error",modalLoading : false});
             }else {
                 this.props.onEdit(thisSong);
                 this.setState({editsongStatus : "Success", modalLoading : false});
@@ -135,7 +136,8 @@ class SongDisplay extends React.Component{
         .then(response => response.json())
         .then(data => {
             if(!data.id) {
-                this.setState({addsongStatus : "Error",modalLoading : false});
+                if(data.Error === "Song is already in the database") this.setState({addsongStatus : "ErrorDupe",modalLoading : false});
+                else this.setState({addsongStatus : "Error",modalLoading : false});
             }else {
                 this.props.onSubmit(data);
                 this.setState({addsongStatus : "Success",modalLoading : false});
@@ -178,7 +180,8 @@ class SongDisplay extends React.Component{
             onSubmit={this.handleSongModalSubmit.bind(this)} 
             jwt={this.props.jwt} 
             playlists={this.props.playlists}
-            onAdd={this.handleAddToPlaylist.bind(this)}/>;
+            onAdd={this.handleAddToPlaylist.bind(this)}/>
+            
         }
 
         return(
@@ -191,6 +194,23 @@ class SongDisplay extends React.Component{
                     </Toast.Header>
                     <Toast.Body>Error with song creation. Please try again later.</Toast.Body>
                 </Toast>
+
+                <Toast className="errorToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "ErrorDupe"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>This song is already in the database.</Toast.Body>
+                </Toast>
+
+                <Toast className="errorToast" onClose={() => this.setState({editsongStatus : "None"})} show={this.state.editsongStatus === "ErrorDupe"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>New song name and artist is already in the database.</Toast.Body>
+                </Toast>
+
 
                 <Toast className="errorToast" onClose={() => this.setState({editsongStatus : "None"})} show={this.state.editsongStatus === "Error"} delay = {3000} autohide>
                     <Toast.Header>

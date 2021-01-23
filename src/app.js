@@ -222,7 +222,7 @@ class App extends React.Component{
     handleSongEdit(newSong){
         let newSongs = this.state.songs.slice();
         newSongs.splice(this.state.currSongIndex,1,newSong);
-        this.setState({songs : newSongs});
+        this.setState({songs : newSongs, currSong : newSong});
     }
 
     handleSongClick(i){
@@ -244,6 +244,18 @@ class App extends React.Component{
         let newPlaylists = this.state.playlists.slice();
         newPlaylists.splice(i,1,thisPlaylist);
         this.setState({playlists : newPlaylists});
+    }
+
+    handleRemoveSongFromPlaylist(i){
+        let newPlaylists = this.state.playlists.slice();
+        let newPlaylist = this.state.currPlaylist;
+        let newPlaylistSongs = this.state.currPlaylistSongs;
+
+        newPlaylist.songs.splice(i,1);
+        newPlaylistSongs.splice(i,1);
+        newPlaylists.splice(this.state.currPlaylistIndex,1,newPlaylist);
+        
+        this.setState({playlists : newPlaylists, currPlaylist : newPlaylist, currPlaylistSongs : newPlaylistSongs});
     }
 
     render(){
@@ -321,6 +333,7 @@ class App extends React.Component{
                  playlist={this.state.currPlaylist}
                  songs={this.state.currPlaylistSongs}
                  onDelete={this.handlePlaylistDelete.bind(this)}
+                 onDeleteSong={this.handleRemoveSongFromPlaylist.bind(this)}
                  onEdit={this.handlePlaylistEdit.bind(this)}
                  />}
             </div>

@@ -35,6 +35,22 @@ function PlaylistSong(props){
     return(
         <div>
             {props.song.id} {props.song.name} : {props.song.artist}
+
+            <button type="button" onClick={() => props.onClick(props.idx)}>X</button>
+
+            <Modal
+            show={props.showConfirmation && props.showConfirmIdx === props.idx}
+            backdrop="static"
+            keyboard={false}
+            >
+                <Modal.Body>
+                    Delete Song "{props.song.name}"?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button disabled={props.isDeleting} onClick={props.onCancel}>Cancel</Button>
+                    <Button disabled={props.isDeleting} onClick={() => props.onDelete(props.song,props.idx)}>Delete</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );  
 }
@@ -48,24 +64,32 @@ class PlaylistDisplay extends React.Component{
             playlistName : "",
             playlistDesc : "",
             deletePlaylistStatus : "None",
-            showDeleteConfirm : false,
-            isDeleting : false,
+            showDeleteConfirmPlaylist : false,
+            isDeletingPlaylist : false,
             editing : false,
             editPlaylistStatus : "None",
             snapshot : "",
+            showDeleteConfirmSong : false,
+            isDeletingSong : false,
+            deleteSongStatus : "None",
+            deleteSongIndex : 0,
         };
 
         this.nameRef = React.createRef();
         this.descRef = React.createRef();
     }
 
+    handleSongDeleteClick(i){
+        this.setState({showDeleteConfirmSong : true, deleteSongIndex : i});
+    }
+
     handleDeleteButtonClick(){
-        this.setState({showDeleteConfirm : true});
+        this.setState({showDeleteConfirmPlaylist : true});
     }
 
     handlePlaylistDelete(){
 
-        this.setState({isDeleting : true});
+        this.setState({isDeletingPlaylist : true});
 
         const reqOpts = {
             method : 'DELETE',
@@ -79,10 +103,34 @@ class PlaylistDisplay extends React.Component{
             if(response.status === 204){
                 this.props.onDelete();
             }else{
-                this.setState({deletePlaylistStatus : "Error"});
+                this.setState({deletePlaylistStatus : "Error", isDeletingPlaylist : false, showDeleteConfirmPlaylist : false});
             }
         })
         .catch(err => console.log(err));
+    }
+
+    handleSongDelete(song,i){
+
+        this.setState({isDeletingSong : true});
+
+        const reqOpts = {
+            method : 'DELETE',
+            headers: { 
+                'Authorization' : 'Bearer ' + this.props.jwt 
+            },
+        };
+
+        fetch(REST_URL + "playlists/" + this.props.playlist.id + "/songs/" + song.id, reqOpts)
+        .then(response => {
+            if(response.status === 204){
+                this.props.onDeleteSong(i);
+                this.setState({deleteSongStatus : "Success", isDeletingSong : false, showDeleteConfirmSong : false});
+            }else{
+                this.setState({deleteSongStatus : "Error", isDeletingSong : false, showDeleteConfirmSong : false});
+            }
+        })
+        .catch(err => console.log(err));
+
     }
 
     handleEditClick(){
@@ -129,7 +177,16 @@ class PlaylistDisplay extends React.Component{
 
         let playlistSongs = this.props.songs.map((song,i) => {
             return(
-                <PlaylistSong song={song} key={i}/>
+                <PlaylistSong 
+                song={song} 
+                key={i}
+                idx={i}
+                onDelete={this.handleSongDelete.bind(this)}
+                onClick={this.handleSongDeleteClick.bind(this)}
+                onCancel={() => {this.setState({showDeleteConfirmSong : false})}}
+                showConfirmation={this.state.showDeleteConfirmSong}
+                showConfirmIdx={this.state.deleteSongIndex}
+                isDeleting={this.state.isDeletingSong}/>
             );
         });
 
@@ -151,6 +208,14 @@ class PlaylistDisplay extends React.Component{
                         <small>just now</small>
                     </Toast.Header>
                     <Toast.Body>Error with editing playlist. Please try again later.</Toast.Body>
+                </Toast>
+
+                <Toast className="errorToast" onClose={() => this.setState({deleteSongStatus : "None"})} show={this.state.deleteSongStatus === "Error"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Error removing song from playlist. Please try again later.</Toast.Body>
                 </Toast>
 
                 <EditableText
@@ -183,9 +248,9 @@ class PlaylistDisplay extends React.Component{
                 playlist={this.props.playlist} 
                 onDelete={this.handlePlaylistDelete.bind(this)}
                 onClick={this.handleDeleteButtonClick.bind(this)}
-                onCancel={() => {this.setState({showDeleteConfirm : false})}}
-                showConfirmation={this.state.showDeleteConfirm}
-                isDeleting={this.state.isDeleting}
+                onCancel={() => {this.setState({showDeleteConfirmPlaylist : false})}}
+                showConfirmation={this.state.showDeleteConfirmPlaylist}
+                isDeleting={this.state.isDeletingPlaylist}
                 />
                 {!this.state.editing &&  <Button type="button" onClick={this.handleEditClick.bind(this)}>Edit</Button>}
                 {this.state.editing && <Button type="button" onClick={this.handleEditCancel.bind(this)} disabled={this.state.editPlaylistStatus === "Working"}>Cancel</Button>}
