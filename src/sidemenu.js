@@ -58,7 +58,7 @@ class SideMenu extends React.Component{
                 pageStart={0}
                 loadMore={this.props.playlistLoadMore}
                 hasMore={this.props.hasMorePlaylists}
-                loader={<Loading/>}
+                loader={<Loading key={0}/>}
                 >
                     {items} 
                 </InfiniteScroll>

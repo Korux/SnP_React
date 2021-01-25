@@ -25,7 +25,9 @@ function SearchBar(props){
 function Song(props){
 
     return(
-        <div onClick={props.onClick}>{props.name} : {props.artist}</div>
+        <div onClick={props.onClick}>
+            {props.name} : {props.artist}
+        </div>
     );
 
 }
@@ -258,7 +260,7 @@ class SongDisplay extends React.Component{
                 pageStart={0}
                 loadMore={this.props.songsLoadMore}
                 hasMore={this.props.hasMoreSongs}
-                loader={<Loading/>}
+                loader={<Loading key={0}/>}
                 >
                     {items} 
                 </InfiniteScroll>
