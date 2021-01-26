@@ -55,39 +55,44 @@ class SongDisplay extends React.Component{
 
     handleSongModalSubmit(name,artist,minutes,seconds,bpm,vocals,genres){
         this.setState({modalLoading : true});
-        let thisSong = this.props.currSong;
 
-        thisSong.name = name;
-        thisSong.artist = artist;
-        thisSong.length = seconds + (60*minutes);
-        thisSong.bpm = bpm;
-        thisSong.vocals = vocals;
-        thisSong.genres = genres;
-
-        const params = {
-            name : thisSong.name,
-            artist : thisSong.artist,
-            length : thisSong.length,
-            bpm : thisSong.bpm,
-            vocals : thisSong.vocals,
-            genres : thisSong.genres
+        var params = {
+            length : seconds + (60*minutes),
+            bpm : bpm,
+            vocals : vocals,
+            genres : genres
         };
 
+        if(!(this.props.currSong.name === name && this.props.currSong.artist === artist)){
+            params['name'] = name;
+            params['artist'] = artist;
+        }
+
         const reqOpts = {
-            method : 'PUT',
+            method : 'PATCH',
             headers: { 
                 'Content-Type': 'application/json',
                 'Authorization' : 'Bearer ' + this.props.jwt 
             },
             body: JSON.stringify(params),
         };
-        fetch(REST_URL + "songs/" + thisSong.id, reqOpts)
+        fetch(REST_URL + "songs/" + this.props.currSong.id, reqOpts)
         .then(response => response.json())
         .then(data => {
             if(!data.id) {
+                console.log(data);
                 if(data.Error === "Song is already in the database") this.setState({editsongStatus : "ErrorDupe",modalLoading : false});
-                else this.setState({editsongStatus : "Error",modalLoading : false, editing : false});
+                else this.setState({editsongStatus : "Error",modalLoading : false});
             }else {
+                let thisSong = this.props.currSong;
+
+                thisSong.name = name;
+                thisSong.artist = artist;
+                thisSong.length = seconds + (60*minutes);
+                thisSong.bpm = bpm;
+                thisSong.vocals = vocals;
+                thisSong.genres = genres;
+
                 this.props.onEdit(thisSong);
                 this.setState({editsongStatus : "Success", modalLoading : false, editing : false});
             }
@@ -109,7 +114,7 @@ class SongDisplay extends React.Component{
     }
 
     handleCloseModal(){
-        this.setState({songModalOpen : false, modalLoading : false});
+        this.setState({songModalOpen : false, modalLoading : false, editing : false});
     }
 
     handleSongCancelClick(){
@@ -138,23 +143,20 @@ class SongDisplay extends React.Component{
             );
         });
 
-        var modalContent = <div>No Song to Display</div>;
-        if(!(this.props.songs.length < this.props.currSongIndex + 1)){
-            let thisSong = this.props.songs[this.props.currSongIndex];
-            modalContent = 
-            <SongModalBody 
-            type="song" 
-            isLoading={this.state.modalLoading} 
-            song={thisSong} 
-            onSubmit={this.handleSongModalSubmit.bind(this)} 
-            jwt={this.props.jwt} 
-            playlists={this.props.playlists}
-            onAdd={this.handleAddToPlaylist.bind(this)}
-            onEdit={this.handleSongEditClick.bind(this)}
-            onCancel={this.handleSongCancelClick.bind(this)}
-            editing={this.state.editing}/>
-            
-        }
+        var modalContent = 
+        <SongModalBody 
+        type="song" 
+        isLoading={this.state.modalLoading} 
+        song={this.props.songs[this.props.currSongIndex]} 
+        onSubmit={this.handleSongModalSubmit.bind(this)} 
+        jwt={this.props.jwt} 
+        playlists={this.props.playlists}
+        onAdd={this.handleAddToPlaylist.bind(this)}
+        onEdit={this.handleSongEditClick.bind(this)}
+        onCancel={this.handleSongCancelClick.bind(this)}
+        editing={this.state.editing}/>
+        
+    
 
         return(
             <div className={style.container}>
@@ -192,6 +194,8 @@ class SongDisplay extends React.Component{
                 <Modal
                 show={this.state.songModalOpen}
                 onHide={this.handleCloseModal.bind(this)}
+                backdrop={this.state.editing ? 'static' : true}
+                keyboard={false}
                 centered={true}
                 >
                     <Modal.Header closeButton>
