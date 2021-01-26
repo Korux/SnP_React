@@ -2,10 +2,9 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import {REST_URL} from './index.js';
 import Loading from './loading.js';
-
 import SongModalBody from './songmodal.js';
-
 import {Modal,Toast} from 'react-bootstrap';
+import style from './songdisplay.module.css';
 
 function SearchBar(props){
 
@@ -14,28 +13,29 @@ function SearchBar(props){
     }
 
     return(
-        <input
-            value={props.songSearch}
-            placeholder={"search song"}
-            onChange={(e) => searchSongChange(e.target.value)}
-        />
+        <div className={style.searchcontainer}>
+            <input
+                value={props.songSearch}
+                placeholder={"search song"}
+                onChange={(e) => searchSongChange(e.target.value)}
+            />
+        </div>
     );
 }
 
 function Song(props){
 
     return(
-        <div onClick={props.onClick}>
-            {props.name} : {props.artist}
+        <div onClick={props.onClick} className={style.songcell}>
+            <div className={style.songimage}>
+                <img src="https://storage.googleapis.com/snp_img/default.png" alt="default"/>
+            </div>
+            <div className={style.songinfo}>
+                {props.name} : {props.artist}
+            </div>
         </div>
     );
 
-}
-
-function AddSongButton(props){
-    return(
-        <div onClick={props.onClick}>Add Song</div>
-    );
 }
 
 class SongDisplay extends React.Component{
@@ -46,8 +46,6 @@ class SongDisplay extends React.Component{
             songModalOpen : false,
             editsongStatus : "None",
             songSearch : "",
-            addsongModalOpen : false,
-            addsongStatus : "None",
             modalLoading : false
         };
 
@@ -106,51 +104,12 @@ class SongDisplay extends React.Component{
         this.setState({songModalOpen : true});
     }
 
-    handleCloseModal(){
-        this.setState({songModalOpen : false, addsongModalOpen : false, modalLoading : false});
-    }
-
-    handleAddSongClick(){
-        this.setState({addsongModalOpen : true});
-    }
-
-    handleAddSongSuccess(name,artist,minutes,seconds,bpm,vocals,genres){
-        this.setState({modalLoading : true});
-        const params = {
-            name : name,
-            artist : artist,
-            length : seconds + (minutes * 60),
-            bpm : bpm,
-            vocals : vocals,
-            genres : genres
-        };
-
-        const reqOpts = {
-            method : 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization' : 'Bearer ' + this.props.jwt 
-            },
-            body: JSON.stringify(params),
-        };
-
-        fetch(REST_URL + "songs", reqOpts)
-        .then(response => response.json())
-        .then(data => {
-            if(!data.id) {
-                if(data.Error === "Song is already in the database") this.setState({addsongStatus : "ErrorDupe",modalLoading : false});
-                else this.setState({addsongStatus : "Error",modalLoading : false});
-            }else {
-                this.props.onSubmit(data);
-                this.setState({addsongStatus : "Success",modalLoading : false});
-            }
-            this.handleCloseModal();
-        })
-        .catch(err => console.log(err));
-    }
-
     handleAddToPlaylist(i){
         this.props.onAdd(i);
+    }
+
+    handleCloseModal(){
+        this.setState({songModalOpen : false, modalLoading : false});
     }
 
     render(){
@@ -187,23 +146,7 @@ class SongDisplay extends React.Component{
         }
 
         return(
-            <div>
-
-                <Toast className="errorToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error with song creation. Please try again later.</Toast.Body>
-                </Toast>
-
-                <Toast className="errorToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "ErrorDupe"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>This song is already in the database.</Toast.Body>
-                </Toast>
+            <div className={style.container}>
 
                 <Toast className="errorToast" onClose={() => this.setState({editsongStatus : "None"})} show={this.state.editsongStatus === "ErrorDupe"} delay = {3000} autohide>
                     <Toast.Header>
@@ -240,31 +183,17 @@ class SongDisplay extends React.Component{
                     </Modal.Footer>
                 </Modal>
 
-                <Modal
-                show={this.state.addsongModalOpen}
-                onHide={this.handleCloseModal.bind(this)}
-                backdrop="static"
-                keyboard={false}
-                centered={true}
-                >
-                    <Modal.Header closeButton>
-                    <Modal.Title>Modal heading</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body><SongModalBody type="newsong" isLoading={this.state.modalLoading} onSubmit={this.handleAddSongSuccess.bind(this)}/></Modal.Body>
-                    <Modal.Footer>
-                    </Modal.Footer>
-                    
-                </Modal>
 
                 <InfiniteScroll
                 pageStart={0}
                 loadMore={this.props.songsLoadMore}
                 hasMore={this.props.hasMoreSongs}
                 loader={<Loading key={0}/>}
+                className={style.songcontainer}
                 >
                     {items} 
                 </InfiniteScroll>
-                {this.props.jwt !== "" && <AddSongButton onClick={this.handleAddSongClick.bind(this)}/>}
+           
             </div>
         );
     }

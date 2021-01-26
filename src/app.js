@@ -1,10 +1,7 @@
 import React from 'react';
-
-import Login from './login.js';
 import SideMenu from './sidemenu.js';
 import SongDisplay from './songdisplay.js';
 import PlaylistDisplay from './playlistdisplay.js';
-import UserInfo from './userinfo.js';
 import {Toast} from 'react-bootstrap';
 
 import {REST_URL} from './index.js';
@@ -286,32 +283,23 @@ class App extends React.Component{
                     </Toast.Header>
                     <Toast.Body>Error with playlist creation. Please try again later.</Toast.Body>
                 </Toast>
-
-                {this.state.loginState === "LoggedIn" && 
-                <UserInfo
-                {...this.state}
-                />}
-
-                {this.state.loginState === "LoggedIn" && 
+   
                 <SideMenu
-                jwt={this.state.jwt}
+                {...this.state}
                 playlistClick={this.handlePlaylistClick.bind(this)}
                 addplaylistClick={this.handleAddPlaylist.bind(this)}
                 discoverClick={this.handleDiscoverClick.bind(this)}
-                playlists={this.state.playlists}
                 playlistLoadMore={this.handleLoadMorePlaylists.bind(this)}
-                hasMorePlaylists={this.state.hasMorePlaylists}
-                />}
 
-                {this.state.loginState !== "LoggedIn" && 
-                <Login 
                 onLogin={this.handleLoginInfo.bind(this)}
                 guestClick={this.handleGuestClick.bind(this)}
                 registerClick={this.handleRegisterClick.bind(this)}
                 loginClick={this.handleLoginClick.bind(this)}
                 loginError={this.handleFailedLogin.bind(this)}
-                loginState={this.state.loginState}
-                 />}
+
+                onSubmit={this.handleNewSongSubmit.bind(this)}
+                />
+
                  {this.state.activeContainer === "SongDisplay" && 
                  <SongDisplay
                  jwt={this.state.jwt}
@@ -322,7 +310,6 @@ class App extends React.Component{
                  currSongIndex={this.state.currSongIndex}
                  onEdit={this.handleSongEdit.bind(this)}
                  onClick={this.handleSongClick.bind(this)}
-                 onSubmit={this.handleNewSongSubmit.bind(this)}
                  onAdd={this.handleAddSongToPlaylist.bind(this)}
                  playlists={this.state.playlists}
                  />}

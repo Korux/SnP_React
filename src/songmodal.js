@@ -215,7 +215,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="name">
                     <Form.Label>Song Name</Form.Label>
                     <EditableText
-                    text={this.props.song.name}
+                    text={this.props.type === "song" && this.props.song.name}
                     placeholder="song name"
                     childRef={this.nameRef}
                     editing={this.state.editing}
@@ -235,7 +235,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="artist">
                     <Form.Label>Song Artist</Form.Label>
                     <EditableText
-                    text={this.props.song.artist}
+                    text={this.props.type === "song" && this.props.song.artist}
                     placeholder="song artist"
                     childRef={this.artistRef}
                     editing={this.state.editing}
@@ -256,7 +256,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="length">
                     <Form.Label>Song Length</Form.Label>
                     <EditableText
-                    text={this.props.song.minutes}
+                    text={this.props.type === "song" && this.props.song.minutes}
                     placeholder="song minutes"
                     childRef={this.minutesRef}
                     editing={this.state.editing}
@@ -270,7 +270,7 @@ class SongModalBody extends React.Component{
                     </EditableText>
                     :
                     <EditableText
-                    text={this.props.song.seconds}
+                    text={this.props.type === "song" && this.props.song.seconds}
                     placeholder="song secondss"
                     childRef={this.secondsRef}
                     editing={this.state.editing}
@@ -289,7 +289,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="bpm">
                     <Form.Label>Song BPM</Form.Label>
                     <EditableText
-                    text={this.props.song.bpm}
+                    text={this.props.type === "song" && this.props.song.bpm}
                     placeholder="song seconds"
                     childRef={this.bpmRef}
                     editing={this.state.editing}
