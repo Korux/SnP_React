@@ -131,6 +131,14 @@ class SideMenu extends React.Component{
                     <Toast.Body>This song is already in the database.</Toast.Body>
                 </Toast>
 
+                <Toast className="successToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "Success"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Successfully Added Song.</Toast.Body>
+                </Toast>
+
 
                 <Modal
                 show={this.state.addsongModalOpen}
@@ -142,7 +150,7 @@ class SideMenu extends React.Component{
                     <Modal.Header closeButton>
                     <Modal.Title>Modal heading</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body><SongModalBody type="newsong" isLoading={this.state.modalLoading} onSubmit={this.handleAddSongSuccess.bind(this)}/></Modal.Body>
+                    <Modal.Body><SongModalBody type="newsong" isLoading={this.state.modalLoading} onSubmit={this.handleAddSongSuccess.bind(this)} editing={true}/></Modal.Body>
                     <Modal.Footer>
                     </Modal.Footer>
                     

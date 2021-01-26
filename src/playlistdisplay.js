@@ -101,6 +101,7 @@ class PlaylistDisplay extends React.Component{
         fetch(REST_URL + "playlists/" + this.props.playlist.id, reqOpts)
         .then(response => {
             if(response.status === 204){
+                this.setState({deletePlaylistStatus : "Success"});
                 this.props.onDelete();
             }else{
                 this.setState({deletePlaylistStatus : "Error", isDeletingPlaylist : false, showDeleteConfirmPlaylist : false});
@@ -200,6 +201,14 @@ class PlaylistDisplay extends React.Component{
                         <small>just now</small>
                     </Toast.Header>
                     <Toast.Body>Error with deleting playlist. Please try again later.</Toast.Body>
+                </Toast>
+
+                <Toast className="errorToast" onClose={() => this.setState({deletePlaylistStatus : "None"})} show={this.state.deletePlaylistStatus === "Success"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Successfully deleted playlist</Toast.Body>
                 </Toast>
 
                 <Toast className="errorToast" onClose={() => this.setState({editPlaylistStatus : "None"})} show={this.state.editPlaylistStatus === "Error"} delay = {3000} autohide>
