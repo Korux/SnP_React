@@ -1,7 +1,7 @@
 import React from 'react';
-import {Modal,Button,Toast} from 'react-bootstrap';
+import {Modal,Button} from 'react-bootstrap';
 import {REST_URL} from './index.js';
-import {EditableText} from './utils.js';
+import {ErrorToast,SuccessToast,EditableText} from './utils.js';
 
 import {Form} from 'react-bootstrap';
 
@@ -194,37 +194,30 @@ class PlaylistDisplay extends React.Component{
 
             <div>
 
-                <Toast className="errorToast" onClose={() => this.setState({deletePlaylistStatus : "None"})} show={this.state.deletePlaylistStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error with deleting playlist. Please try again later.</Toast.Body>
-                </Toast>
 
-                <Toast className="errorToast" onClose={() => this.setState({editPlaylistStatus : "None"})} show={this.state.editPlaylistStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error with editing playlist. Please try again later.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({deletePlaylistStatus : "None"})} 
+                show={this.state.deletePlaylistStatus === "Error"} 
+                message="Error with deleting playlist. Please try again later."
+                />
 
-                <Toast className="errorToast" onClose={() => this.setState({deleteSongStatus : "None"})} show={this.state.deleteSongStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error removing song from playlist. Please try again later.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({editPlaylistStatus : "None"})} 
+                show={this.state.editPlaylistStatus === "Error"} 
+                message="Error with editing playlist. Please try again later."
+                />
 
-                <Toast className="successToast" onClose={() => this.setState({deleteSongStatus : "None"})} show={this.state.deleteSongStatus === "Success"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Song removed from playlist.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({deleteSongStatus : "None"})} 
+                show={this.state.deleteSongStatus === "Error"} 
+                message="Error removing song from playlist. Please try again later."
+                />
+
+                <SuccessToast
+                onClose={() => this.setState({deleteSongStatus : "None"})} 
+                show={this.state.deleteSongStatus === "Success"} 
+                message="Song removed from playlist."
+                />
 
                 <EditableText
                 text={this.props.playlist.name} 

@@ -4,9 +4,10 @@ import Loading from './loading.js';
 import Login from './login.js';
 import UserInfo from './userinfo.js';
 import SongModalBody from './songmodal.js';
-import {Modal,Toast} from 'react-bootstrap';
+import {Modal} from 'react-bootstrap';
 import {REST_URL} from './index.js';
 import style from './sidemenu.module.css';
+import { ErrorToast, SuccessToast } from './utils.js';
 
 function Playlist(props){
     return(
@@ -114,31 +115,23 @@ class SideMenu extends React.Component{
         return(
             <div className={style.container}>
 
+                <ErrorToast
+                onClose={() => this.setState({addsongStatus : "None"})} 
+                show={this.state.addsongStatus === "Error"} 
+                message="Error with song creation. Please try again later."
+                />
 
-                <Toast className="errorToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error with song creation. Please try again later.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({addsongStatus : "None"})} 
+                show={this.state.addsongStatus === "ErrorDupe"} 
+                message="This song is already in the database."
+                />
 
-                <Toast className="errorToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "ErrorDupe"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>This song is already in the database.</Toast.Body>
-                </Toast>
-
-                <Toast className="successToast" onClose={() => this.setState({addsongStatus : "None"})} show={this.state.addsongStatus === "Success"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Song created.</Toast.Body>
-                </Toast>
-
+                <SuccessToast
+                onClose={() => this.setState({addsongStatus : "None"})} 
+                show={this.state.addsongStatus === "Success"} 
+                message="Song created."
+                />
 
                 <Modal
                 show={this.state.addsongModalOpen}

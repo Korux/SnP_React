@@ -2,7 +2,7 @@ import React from 'react';
 import SideMenu from './sidemenu.js';
 import SongDisplay from './songdisplay.js';
 import PlaylistDisplay from './playlistdisplay.js';
-import {Toast} from 'react-bootstrap';
+import {ErrorToast,SuccessToast} from './utils.js';
 
 import {REST_URL} from './index.js';
 
@@ -261,37 +261,29 @@ class App extends React.Component{
         return(
             <div>
 
-                <Toast className="errorToast" onClose={() => this.setState({loadplaylistStatus : "None"})} show={this.state.loadplaylistStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error with loading playlist. Please try again later.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({loadplaylistStatus : "None"})}
+                show={this.state.loadplaylistStatus === "Error"}
+                message="Error with loading playlist. Please try again later."
+                />
 
-                <Toast className="errorToast" onClose={() => this.setState({loginStatus : "None"})} show={this.state.loginStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error with login. Check email and password and try again.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({loginStatus : "None"})}
+                show={this.state.loginStatus === "Error"}
+                message="Error with login. Check email and password and try again."
+                />
 
-                <Toast className="errorToast" onClose={() => this.setState({addplaylistStatus : "None"})} show={this.state.addplaylistStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error with playlist creation. Please try again later.</Toast.Body>
-                </Toast>
-   
-                <Toast className="successToast" onClose={() => this.setState({deletePlaylistStatus : "None"})} show={this.state.deletePlaylistStatus === "Success"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Playlist deleted.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({addplaylistStatus : "None"})}
+                show={this.state.addplaylistStatus === "Error"}
+                message="Error with playlist creation. Please try again later."
+                />
+
+                <SuccessToast
+                onClose={() => this.setState({deletePlaylistStatus : "None"})}
+                show={this.state.deletePlaylistStatus === "Success"}
+                message="Playlist deleted."
+                />
 
                 <SideMenu
                 {...this.state}

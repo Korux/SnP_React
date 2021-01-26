@@ -1,7 +1,7 @@
 import React from 'react';
-import {EditableText} from './utils.js';
+import {EditableText, ErrorToast, SuccessToast} from './utils.js';
 
-import {Form,Button, DropdownButton, Dropdown, Toast} from 'react-bootstrap';
+import {Form,Button, DropdownButton, Dropdown} from 'react-bootstrap';
 
 import {REST_URL} from './index.js';
 
@@ -192,34 +192,23 @@ class SongModalBody extends React.Component{
         return (
             <div>
 
+                <ErrorToast
+                onClose={() => this.setState({addtoPlaylistStatus : "None"})} 
+                show={this.state.addtoPlaylistStatus === "ErrorDupe"} 
+                message="Song is already in this playlist."
+                />
 
+                <ErrorToast
+                onClose={() => this.setState({addtoPlaylistStatus : "None"})} 
+                show={this.state.addtoPlaylistStatus === "Error"} 
+                message="Error adding song to playlist. Please try again later."
+                />
 
-
-                <Toast className="errorToast" onClose={() => this.setState({addtoPlaylistStatus : "None"})} show={this.state.addtoPlaylistStatus === "ErrorDupe"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Song is already in this playlist.</Toast.Body>
-                </Toast>
-
-                <Toast className="errorToast" onClose={() => this.setState({addtoPlaylistStatus : "None"})} show={this.state.addtoPlaylistStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error adding song to playlist. Please try again later.</Toast.Body>
-                </Toast>
-
-                <Toast className="successToast" onClose={() => this.setState({addtoPlaylistStatus : "None"})} show={this.state.addtoPlaylistStatus === "Success"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Song added to playlist.</Toast.Body>
-                </Toast>
-
-
+                <SuccessToast
+                onClose={() => this.setState({addtoPlaylistStatus : "None"})} 
+                show={this.state.addtoPlaylistStatus === "Success"} 
+                message="Song added to playlist."
+                />
 
                 <Form onSubmit={this.handleSubmit.bind(this)}>
 

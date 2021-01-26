@@ -3,8 +3,9 @@ import InfiniteScroll from 'react-infinite-scroller';
 import {REST_URL} from './index.js';
 import Loading from './loading.js';
 import SongModalBody from './songmodal.js';
-import {Modal,Toast} from 'react-bootstrap';
+import {Modal} from 'react-bootstrap';
 import style from './songdisplay.module.css';
+import { ErrorToast } from './utils.js';
 
 function SearchBar(props){
 
@@ -161,22 +162,17 @@ class SongDisplay extends React.Component{
         return(
             <div className={style.container}>
 
-                <Toast className="errorToast" onClose={() => this.setState({editsongStatus : "None"})} show={this.state.editsongStatus === "ErrorDupe"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Song name and artist is already in the database.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({editsongStatus : "None"})} 
+                show={this.state.editsongStatus === "ErrorDupe"} 
+                message="Song name and artist is already in the database."
+                />
 
-
-                <Toast className="errorToast" onClose={() => this.setState({editsongStatus : "None"})} show={this.state.editsongStatus === "Error"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Error with editing song. Please try again later.</Toast.Body>
-                </Toast>
+                <ErrorToast
+                onClose={() => this.setState({editsongStatus : "None"})} 
+                show={this.state.editsongStatus === "Error"}
+                message="Error with editing song. Please try again later."
+                />
 
                 <SearchBar
                 songSearch={this.state.songSearch}
