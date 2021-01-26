@@ -211,12 +211,12 @@ class SongModalBody extends React.Component{
                     <Toast.Body>Error adding song to playlist. Please try again later.</Toast.Body>
                 </Toast>
 
-                <Toast className="errorToast" onClose={() => this.setState({addtoPlaylistStatus : "None"})} show={this.state.addtoPlaylistStatus === "Success"} delay = {3000} autohide>
+                <Toast className="successToast" onClose={() => this.setState({addtoPlaylistStatus : "None"})} show={this.state.addtoPlaylistStatus === "Success"} delay = {3000} autohide>
                     <Toast.Header>
                         <strong className="mr-auto">Bootstrap</strong>
                         <small>just now</small>
                     </Toast.Header>
-                    <Toast.Body>Successfully added song to playlist.</Toast.Body>
+                    <Toast.Body>Song added to playlist.</Toast.Body>
                 </Toast>
 
 

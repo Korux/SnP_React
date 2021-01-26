@@ -166,7 +166,7 @@ class SongDisplay extends React.Component{
                         <strong className="mr-auto">Bootstrap</strong>
                         <small>just now</small>
                     </Toast.Header>
-                    <Toast.Body>New song name and artist is already in the database.</Toast.Body>
+                    <Toast.Body>Song name and artist is already in the database.</Toast.Body>
                 </Toast>
 
 
@@ -177,15 +177,6 @@ class SongDisplay extends React.Component{
                     </Toast.Header>
                     <Toast.Body>Error with editing song. Please try again later.</Toast.Body>
                 </Toast>
-
-                <Toast className="errorToast" onClose={() => this.setState({editsongStatus : "None"})} show={this.state.editsongStatus === "Success"} delay = {3000} autohide>
-                    <Toast.Header>
-                        <strong className="mr-auto">Bootstrap</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>Successfully edited song.</Toast.Body>
-                </Toast>
-
 
                 <SearchBar
                 songSearch={this.state.songSearch}

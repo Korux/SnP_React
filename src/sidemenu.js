@@ -136,7 +136,7 @@ class SideMenu extends React.Component{
                         <strong className="mr-auto">Bootstrap</strong>
                         <small>just now</small>
                     </Toast.Header>
-                    <Toast.Body>Successfully Added Song.</Toast.Body>
+                    <Toast.Body>Song created.</Toast.Body>
                 </Toast>
 
 

@@ -33,6 +33,7 @@ class App extends React.Component{
             currPlaylistSongs : [],
             addplaylistStatus : "None",
             loadplaylistStatus : "None",
+            deleteplaylistStatus : "None",
 
             // -- SONGS --
             songs : [],
@@ -115,7 +116,7 @@ class App extends React.Component{
     handlePlaylistDelete(){
         let newPlaylists = this.state.playlists.slice();
         newPlaylists.splice(this.state.currPlaylistIndex,1);
-        this.setState({playlists : newPlaylists, activeContainer : "SongDisplay"});
+        this.setState({playlists : newPlaylists, activeContainer : "SongDisplay", deletePlaylistStatus : "Success"});
     }
 
     handleDiscoverClick(){
@@ -284,6 +285,14 @@ class App extends React.Component{
                     <Toast.Body>Error with playlist creation. Please try again later.</Toast.Body>
                 </Toast>
    
+                <Toast className="successToast" onClose={() => this.setState({deletePlaylistStatus : "None"})} show={this.state.deletePlaylistStatus === "Success"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Playlist deleted.</Toast.Body>
+                </Toast>
+
                 <SideMenu
                 {...this.state}
                 playlistClick={this.handlePlaylistClick.bind(this)}
