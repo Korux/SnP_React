@@ -46,7 +46,8 @@ class SongDisplay extends React.Component{
             songModalOpen : false,
             editsongStatus : "None",
             songSearch : "",
-            modalLoading : false
+            modalLoading : false,
+            editing : false,
         };
 
         this.handleSongClick.bind(this);
@@ -80,16 +81,15 @@ class SongDisplay extends React.Component{
             },
             body: JSON.stringify(params),
         };
-
         fetch(REST_URL + "songs/" + thisSong.id, reqOpts)
         .then(response => response.json())
         .then(data => {
             if(!data.id) {
                 if(data.Error === "Song is already in the database") this.setState({editsongStatus : "ErrorDupe",modalLoading : false});
-                else this.setState({editsongStatus : "Error",modalLoading : false});
+                else this.setState({editsongStatus : "Error",modalLoading : false, editing : false});
             }else {
                 this.props.onEdit(thisSong);
-                this.setState({editsongStatus : "Success", modalLoading : false});
+                this.setState({editsongStatus : "Success", modalLoading : false, editing : false});
             }
         })
         .catch(err => console.log(err));
@@ -110,6 +110,14 @@ class SongDisplay extends React.Component{
 
     handleCloseModal(){
         this.setState({songModalOpen : false, modalLoading : false});
+    }
+
+    handleSongCancelClick(){
+        this.setState({editing : false});
+    }
+
+    handleSongEditClick(){
+        this.setState({editing : true});
     }
 
     render(){
@@ -141,7 +149,10 @@ class SongDisplay extends React.Component{
             onSubmit={this.handleSongModalSubmit.bind(this)} 
             jwt={this.props.jwt} 
             playlists={this.props.playlists}
-            onAdd={this.handleAddToPlaylist.bind(this)}/>
+            onAdd={this.handleAddToPlaylist.bind(this)}
+            onEdit={this.handleSongEditClick.bind(this)}
+            onCancel={this.handleSongCancelClick.bind(this)}
+            editing={this.state.editing}/>
             
         }
 
@@ -163,6 +174,14 @@ class SongDisplay extends React.Component{
                         <small>just now</small>
                     </Toast.Header>
                     <Toast.Body>Error with editing song. Please try again later.</Toast.Body>
+                </Toast>
+
+                <Toast className="errorToast" onClose={() => this.setState({editsongStatus : "None"})} show={this.state.editsongStatus === "Success"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Successfully edited song.</Toast.Body>
                 </Toast>
 
 

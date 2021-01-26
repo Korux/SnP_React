@@ -19,7 +19,6 @@ class SongModalBody extends React.Component{
             genres : (this.props.song === undefined ? [] : this.props.song.genres),
             thisGenre : "",
             thisVocal : "",
-            editing : (this.props.type === "newsong" ? true : false),
             snapshot : "",
             addtoPlaylistStatus : "None",
         };
@@ -47,7 +46,6 @@ class SongModalBody extends React.Component{
     }
 
     handleSubmit(event){
-        if(this.props.type === "song") this.setState({editing : false});
         event.preventDefault();
         this.props.onSubmit(
             this.state.name,
@@ -58,6 +56,11 @@ class SongModalBody extends React.Component{
             this.state.vocals,
             this.state.genres);
         this.setState({thisGenre : "", thisVocal : ""});
+    }
+
+    handleEditClick(){
+        this.setState({snapshot : this.state});
+        this.props.onEdit();
     }
 
     handleEditCancel(){
@@ -72,7 +75,8 @@ class SongModalBody extends React.Component{
             thisGenre : "",
             thisVocal : "",
         });
-         this.setState({editing : false, snapshot : ""});
+         this.setState({snapshot : ""});
+         this.props.onCancel();
     }
 
     addVocal(){
@@ -103,7 +107,7 @@ class SongModalBody extends React.Component{
     displayVocals(){
         const vocalList = this.state.vocals.map((vocal,i) => {
             return(
-                <li key={i}>{vocal}{this.state.editing &&<span className="close" onClick={() => this.removeVocal(i)}>x</span>}</li>
+                <li key={i}>{vocal}{this.props.editing &&<span className="close" onClick={() => this.removeVocal(i)}>x</span>}</li>
             );
         });
         return(
@@ -116,7 +120,7 @@ class SongModalBody extends React.Component{
     displayGenres(){
         const genreList = this.state.genres.map((genre,i) => {
             return(
-                <li key={i}>{genre}{this.state.editing && <span className="close" onClick={() => this.removeGenre(i)}>x</span>}</li>
+                <li key={i}>{genre}{this.props.editing && <span className="close" onClick={() => this.removeGenre(i)}>x</span>}</li>
             );
         });
         return(
@@ -161,6 +165,7 @@ class SongModalBody extends React.Component{
             if(response.status !== 204){
                 if(this.state.addtoPlaylistStatus !== "ErrorDupe") this.setState({addtoPlaylistStatus : "Error"});
             }else{
+                this.setState({addtoPlaylistStatus : "Success"});
                 this.props.onAdd(i);
             }
         })
@@ -206,6 +211,14 @@ class SongModalBody extends React.Component{
                     <Toast.Body>Error adding song to playlist. Please try again later.</Toast.Body>
                 </Toast>
 
+                <Toast className="errorToast" onClose={() => this.setState({addtoPlaylistStatus : "None"})} show={this.state.addtoPlaylistStatus === "Success"} delay = {3000} autohide>
+                    <Toast.Header>
+                        <strong className="mr-auto">Bootstrap</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>Successfully added song to playlist.</Toast.Body>
+                </Toast>
+
 
 
                 <Form onSubmit={this.handleSubmit.bind(this)}>
@@ -218,7 +231,7 @@ class SongModalBody extends React.Component{
                     text={this.props.type === "song" && this.props.song.name}
                     placeholder="song name"
                     childRef={this.nameRef}
-                    editing={this.state.editing}
+                    editing={this.props.editing}
                     >
                         <Form.Control
                         type="text"
@@ -238,7 +251,7 @@ class SongModalBody extends React.Component{
                     text={this.props.type === "song" && this.props.song.artist}
                     placeholder="song artist"
                     childRef={this.artistRef}
-                    editing={this.state.editing}
+                    editing={this.props.editing}
                     >
                         <Form.Control
                         type="text"
@@ -259,7 +272,7 @@ class SongModalBody extends React.Component{
                     text={this.props.type === "song" && this.props.song.minutes}
                     placeholder="song minutes"
                     childRef={this.minutesRef}
-                    editing={this.state.editing}
+                    editing={this.props.editing}
                     >
                         <Form.Control
                         type="text"
@@ -273,7 +286,7 @@ class SongModalBody extends React.Component{
                     text={this.props.type === "song" && this.props.song.seconds}
                     placeholder="song secondss"
                     childRef={this.secondsRef}
-                    editing={this.state.editing}
+                    editing={this.props.editing}
                     >
                         <Form.Control
                         type="number"
@@ -292,7 +305,7 @@ class SongModalBody extends React.Component{
                     text={this.props.type === "song" && this.props.song.bpm}
                     placeholder="song seconds"
                     childRef={this.bpmRef}
-                    editing={this.state.editing}
+                    editing={this.props.editing}
                     >
                         <Form.Control
                         type="number"
@@ -305,7 +318,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="vocals">
                     <Form.Label>Vocals</Form.Label>
                     <Form.Row>
-                        {this.state.editing &&
+                        {this.props.editing &&
                         <Form.Group as={Form.Col}>
                             <Form.Control
                             type="text"
@@ -315,7 +328,7 @@ class SongModalBody extends React.Component{
                             />
                         </Form.Group>}
                     
-                        {this.state.editing &&
+                        {this.props.editing &&
                         <Form.Group as={Form.Col}>
                             <Button type="button" onClick={this.addVocal.bind(this)} disabled={this.state.thisVocal.length === 0}>
                                 Add Vocal
@@ -331,7 +344,7 @@ class SongModalBody extends React.Component{
                 <Form.Group size="lg" controlId="genres">
                     <Form.Label>Genres</Form.Label>
                     <Form.Row>
-                        {this.state.editing &&
+                        {this.props.editing &&
                         <Form.Group as={Form.Col}>
                             <Form.Control
                             type="text"
@@ -341,7 +354,7 @@ class SongModalBody extends React.Component{
                             />
                         </Form.Group>}
                         
-                        {this.state.editing &&
+                        {this.props.editing &&
                         <Form.Group as={Form.Col}>
                             <Button type="button" onClick={this.addGenre.bind(this)} disabled={this.state.thisGenre.length === 0}>
                                 Add Genre
@@ -356,7 +369,7 @@ class SongModalBody extends React.Component{
                 </Form.Group>
 
                 {this.props.type === "song" &&
-                    <DropdownButton title="Add to Playlist" disabled={this.props.jwt==="" || this.state.editing}>
+                    <DropdownButton title="Add to Playlist" disabled={this.props.jwt==="" || this.props.editing}>
                         {playlists.length > 0 ? playlists : <Dropdown.ItemText>No Playlists</Dropdown.ItemText>}
                     </DropdownButton>
                 }
@@ -366,9 +379,9 @@ class SongModalBody extends React.Component{
                 {this.props.type === "newsong" && <Button block size="lg" type="submit" disabled={!this.validateForm() || this.props.isLoading}>
                     Create
                 </Button>}
-                {!this.state.editing && this.props.type === "song" && <Button onClick={() => this.setState({editing : true, snapshot : this.state})} disabled={this.props.jwt===""}>Edit</Button>}
-                {this.state.editing && this.props.type === "song" && <Button type="button" onClick={this.handleEditCancel.bind(this)} disabled={this.props.isLoading}>Cancel</Button>}
-                {this.state.editing && this.props.type === "song" && <Button type="submit" disabled={this.props.isLoading}>Save</Button>}
+                {!this.props.editing && this.props.type === "song" && <Button onClick={this.handleEditClick.bind(this)} disabled={this.props.jwt===""}>Edit</Button>}
+                {this.props.editing && this.props.type === "song" && <Button type="button" onClick={this.handleEditCancel.bind(this)} disabled={this.props.isLoading}>Cancel</Button>}
+                {this.props.editing && this.props.type === "song" && <Button type="submit" disabled={this.props.isLoading}>Save</Button>}
                 </Form>
 
             </div>
